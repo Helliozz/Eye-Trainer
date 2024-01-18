@@ -3,10 +3,11 @@ package com.example.eyetrainer.Adapter
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.eyetrainer.Data.ReminderItemData
+import com.example.eyetrainer.Data.ExerciseItemData
 import com.example.eyetrainer.databinding.ItemExerciseButtonBinding
 
 class ChoiceRecyclerViewAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -15,11 +16,11 @@ class ChoiceRecyclerViewAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder
 
     class ItemViewHolder(private val binding: ItemExerciseButtonBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun setExercise(item: ReminderItemData) {
+        fun setExercise(item: ExerciseItemData) {
             binding.apply {
-                firstExerciseIcon.setImageDrawable(item.firstImage)
+                firstExerciseIcon.setImageResource(item.firstImage)
                 firstExerciseName.text = item.firstName
-                secondExerciseIcon.setImageDrawable(item.secondImage)
+                secondExerciseIcon.setImageResource(item.secondImage)
                 secondExerciseName.text = item.secondName
             }
         }
@@ -41,16 +42,16 @@ class ChoiceRecyclerViewAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder
         holder.setIsRecyclable(false)
     }
 
-    private val differCallback = object : DiffUtil.ItemCallback<ReminderItemData>() {
+    private val differCallback = object : DiffUtil.ItemCallback<ExerciseItemData>() {
         override fun areContentsTheSame(
-            oldItem: ReminderItemData, newItem: ReminderItemData
+            oldItem: ExerciseItemData, newItem: ExerciseItemData
         ): Boolean {
             return oldItem.firstName == newItem.firstName
         }
 
         @SuppressLint("DiffUtilEquals")
         override fun areItemsTheSame(
-            oldItem: ReminderItemData, newItem: ReminderItemData
+            oldItem: ExerciseItemData, newItem: ExerciseItemData
         ): Boolean {
             return oldItem == newItem
         }
