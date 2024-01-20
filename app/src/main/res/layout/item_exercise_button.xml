@@ -45,6 +45,7 @@
         android:layout_marginBottom="10dp"
         android:backgroundTint="#BBA49D"
         app:cardCornerRadius="20dp">
+
         <TextView
             android:id="@+id/second_exercise_name"
             android:layout_width="wrap_content"

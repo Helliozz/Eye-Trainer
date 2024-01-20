@@ -5,45 +5,45 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.eyetrainer.Adapter.ChoiceRecyclerViewAdapter
-import com.example.eyetrainer.Data.ExerciseItemData
+import com.example.eyetrainer.Data.SingleExercise
 import com.example.eyetrainer.R
+import com.example.eyetrainer.ViewModel.ChoiceFragmentViewModel
 import com.example.eyetrainer.databinding.FragmentChoiceBinding
 
 class ChoiceFragment : Fragment() {
 
+    private lateinit var itemFun: (SingleExercise)->Unit
+
     private lateinit var binding: FragmentChoiceBinding
-    private val recyclerViewAdapter by lazy { ChoiceRecyclerViewAdapter() }
-    private val exercises: List<ExerciseItemData> = listOf(
-        ExerciseItemData(
-            R.drawable.icon_left_right, "влево-вправо", R.drawable.icon_up_down, "вверх-вниз"
-        ), ExerciseItemData(
-            R.drawable.icon_circle_left, "круг влево", R.drawable.icon_circle_right, "круг вправо"
-        ), ExerciseItemData(
-            R.drawable.icon_rombus, "ромб", R.drawable.icon_square, "квадрат"
-        ), ExerciseItemData(
-            R.drawable.icon_rainbow_1, "радуга 1", R.drawable.icon_rainbow_2, "радуга 2"
-        )
-    )
+    private val recyclerViewAdapter by lazy { ChoiceRecyclerViewAdapter(itemFun) }
+    private val choiceFragmentViewModel: ChoiceFragmentViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentChoiceBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        itemFun={
+            choiceFragmentViewModel.saveExercise(it)
+            requireView().findNavController().navigate(R.id.action_choiceFragment_to_currentExerciseFragment)
+        }
+
         binding.reminder.setOnClickListener {
             requireView().findNavController()
-                .navigate(R.id.action_choiceFragment_to_remiderFragment)
+                .navigate(R.id.action_choiceFragment_to_reminderFragment)
         }
-        recyclerViewAdapter.differ.submitList(exercises)
+        recyclerViewAdapter.differ.submitList(choiceFragmentViewModel.getExercises())
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(activity)
-            adapter=recyclerViewAdapter
+            adapter = recyclerViewAdapter
         }
     }
+
 }

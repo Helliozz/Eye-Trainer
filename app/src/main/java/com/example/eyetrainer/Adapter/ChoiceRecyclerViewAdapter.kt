@@ -3,25 +3,36 @@ package com.example.eyetrainer.Adapter
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eyetrainer.Data.ExerciseItemData
+import com.example.eyetrainer.Data.SingleExercise
 import com.example.eyetrainer.databinding.ItemExerciseButtonBinding
 
-class ChoiceRecyclerViewAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ChoiceRecyclerViewAdapter(
+    val itemFun: (SingleExercise) -> Unit
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private lateinit var binding: ItemExerciseButtonBinding
 
-    class ItemViewHolder(private val binding: ItemExerciseButtonBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class ItemViewHolder(
+        private val binding: ItemExerciseButtonBinding,
+        private val recycler: ChoiceRecyclerViewAdapter
+    ) : RecyclerView.ViewHolder(binding.root) {
         fun setExercise(item: ExerciseItemData) {
             binding.apply {
                 firstExerciseIcon.setImageResource(item.firstImage)
                 firstExerciseName.text = item.firstName
                 secondExerciseIcon.setImageResource(item.secondImage)
                 secondExerciseName.text = item.secondName
+
+                firstExercise.setOnClickListener {
+                    recycler.itemFun(SingleExercise(item.firstImage, item.firstName))
+                }
+                secondExercise.setOnClickListener {
+                    recycler.itemFun(SingleExercise(item.secondImage, item.secondName))
+                }
             }
         }
     }
@@ -30,7 +41,7 @@ class ChoiceRecyclerViewAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         binding =
             ItemExerciseButtonBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ItemViewHolder(binding)
+        return ItemViewHolder(binding, this)
     }
 
     override fun getItemCount(): Int {
