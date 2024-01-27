@@ -22,16 +22,16 @@ class ChoiceRecyclerViewAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun setExercise(item: ExerciseItemData) {
             binding.apply {
-                firstExerciseIcon.setImageResource(item.firstImage)
-                firstExerciseName.text = item.firstName
-                secondExerciseIcon.setImageResource(item.secondImage)
-                secondExerciseName.text = item.secondName
+                firstExerciseIcon.setImageResource(item.first.image)
+                firstExerciseName.text = item.first.name
+                secondExerciseIcon.setImageResource(item.second.image)
+                secondExerciseName.text = item.second.name
 
                 firstExercise.setOnClickListener {
-                    recycler.itemFun(SingleExercise(item.firstImage, item.firstName))
+                    recycler.itemFun(item.first)
                 }
                 secondExercise.setOnClickListener {
-                    recycler.itemFun(SingleExercise(item.secondImage, item.secondName))
+                    recycler.itemFun(item.second)
                 }
             }
         }
@@ -57,7 +57,7 @@ class ChoiceRecyclerViewAdapter(
         override fun areContentsTheSame(
             oldItem: ExerciseItemData, newItem: ExerciseItemData
         ): Boolean {
-            return oldItem.firstName == newItem.firstName
+            return oldItem.first.name == newItem.first.name && oldItem.first.image == newItem.first.image && oldItem.second.name == newItem.second.name && oldItem.second.image == newItem.second.image
         }
 
         @SuppressLint("DiffUtilEquals")
