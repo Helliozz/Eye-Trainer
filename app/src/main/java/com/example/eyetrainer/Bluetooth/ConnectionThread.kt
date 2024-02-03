@@ -5,7 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import java.io.IOException
 
-class ConnectionThread(private val device: BluetoothDevice, private val failFun: ()->Unit, private val successFun: ()->Unit) : Thread() {
+class ConnectionThread(private val device: BluetoothDevice, private val failFun: ()->Unit, private val successFun: (BluetoothSocket)->Unit) : Thread() {
     private var bluetoothSocket: BluetoothSocket? = null
     private var success = false
 
@@ -16,6 +16,10 @@ class ConnectionThread(private val device: BluetoothDevice, private val failFun:
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    fun getBluetoothSocket(): BluetoothSocket? {
+        return bluetoothSocket
     }
 
     @SuppressLint("MissingPermission")
@@ -38,7 +42,7 @@ class ConnectionThread(private val device: BluetoothDevice, private val failFun:
         if (success) {
             //connectedThread = ConnectedThread(bluetoothSocket)
             //connectedThread!!.start()
-            successFun()
+            successFun(bluetoothSocket!!)
         }
     }
 

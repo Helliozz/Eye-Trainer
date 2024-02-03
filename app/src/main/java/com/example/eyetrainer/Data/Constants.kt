@@ -33,6 +33,7 @@ object Constants {
 
     const val APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE = "No data can be sent to any physical device."
     const val APP_TOAST_BLUETOOTH_MISSING = "Sadly, you have no Bluetooth support."
+    const val APP_DEVICE_BLUETOOTH_ADDRESS = "00:20:10:08:0B:EF"
 }
 
 

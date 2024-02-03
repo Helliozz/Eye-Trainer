@@ -12,11 +12,13 @@ import androidx.lifecycle.ViewModel
 import com.example.eyetrainer.Bluetooth.ConnectedThread
 import com.example.eyetrainer.Bluetooth.ConnectionThread
 import com.example.eyetrainer.Data.Constants
+import com.example.eyetrainer.Data.Constants.APP_DEVICE_BLUETOOTH_ADDRESS
 import com.example.eyetrainer.Data.Constants.APP_EXERCISES_BASE_LIST
 import com.example.eyetrainer.Data.ExerciseItemData
 import com.example.eyetrainer.Data.SingleExercise
 
 
+@SuppressLint("MissingPermission")
 class ExerciseViewModel : ViewModel() {
     private var isBluetoothAvailable: Boolean? = null
 
@@ -26,8 +28,8 @@ class ExerciseViewModel : ViewModel() {
     private var bluetoothAdapter: BluetoothAdapter? = null
     private val bluetoothDevices: ArrayList<BluetoothDevice> = arrayListOf()
 
-    private val connectionThread: ConnectionThread? = null
-    private val connectedThread: ConnectedThread? = null
+    private var connectionThread: ConnectionThread? = null
+    private var connectedThread: ConnectedThread? = null
 
     fun setBluetoothAvailable(available: Boolean) {
         isBluetoothAvailable = available
@@ -42,13 +44,11 @@ class ExerciseViewModel : ViewModel() {
         bluetoothAdapter = bluetoothManager.adapter
         if (bluetoothAdapter == null) {
             // Device doesn't support Bluetooth
-            Toast.makeText(context, Constants.APP_TOAST_BLUETOOTH_MISSING + "\n" + Constants.APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE, Toast.LENGTH_SHORT).show()
             setBluetoothAvailable(false)
         }
         setBluetoothAvailable(bluetoothAdapter != null)
     }
 
-    @SuppressLint("MissingPermission")
     fun enableSearch(/*context: Context*/) {
         if (bluetoothAdapter!!.isDiscovering) {
             bluetoothAdapter!!.cancelDiscovery()
@@ -60,15 +60,37 @@ class ExerciseViewModel : ViewModel() {
     }
 
     fun uploadData(command: String) {
-        if (connectedThread != null && connectionThread!!.isConnected) {
-            connectedThread.write(command)
+        if (connectedThread != null && connectionThread != null && connectionThread!!.isConnected) {
+            connectedThread!!.write(command)
         }
     }
 
-    @SuppressLint("MissingPermission")
     fun addDevice(device: BluetoothDevice) {
+        if (bluetoothDevices.contains(device)) { return }
         bluetoothDevices.add(device)
-        Log.d("APP_CHECKER", "Device added.")
+        Log.d("APP_CHECKER", "Device added: ${device.name} (${device.address}).")
+    }
+
+    fun findRelevantDevice() {
+        val connectedThreads: ArrayList<ConnectedThread> = arrayListOf()
+        bluetoothDevices.forEach {
+            if (it.address == APP_DEVICE_BLUETOOTH_ADDRESS) {
+                val currentConnectionThread = ConnectionThread(it,
+                    successFun = { socket ->
+                        val currentConnectedThread = ConnectedThread(socket)
+                        currentConnectedThread.start()
+                        connectedThreads.add(currentConnectedThread)
+
+                        connectedThread = currentConnectedThread
+                        Log.d("APP_CHECKER", "Connection to device ${it.name} (${it.bluetoothClass}) established.")
+                    },
+                    failFun = {
+                        Log.d("APP_CHECKER", "Connection to device ${it.name} (${it.bluetoothClass}) failed.")
+                    })
+                currentConnectionThread.start()
+                connectionThread = currentConnectionThread
+            }
+        }
     }
 
     fun getExercises(): List<ExerciseItemData> {
@@ -82,7 +104,6 @@ class ExerciseViewModel : ViewModel() {
     fun getExercise(): SingleExercise {
         return savedExercise
     }
-
 
 
     /*private fun accessLocationPermission(context: Context) {

@@ -3,7 +3,6 @@ package com.example.eyetrainer.UI
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -24,8 +23,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.eyetrainer.Adapter.ChoiceRecyclerViewAdapter
-import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_MISSING
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE
+import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_MISSING
 import com.example.eyetrainer.Data.SingleExercise
 import com.example.eyetrainer.R
 import com.example.eyetrainer.ViewModel.ExerciseViewModel
@@ -103,8 +102,10 @@ class ExerciseFragment : Fragment() {
             filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
             filter.addAction(BluetoothDevice.ACTION_FOUND)
             registerReceiver(activity!!, receiver, filter, RECEIVER_EXPORTED)
+            exerciseViewModel.enableSearch()
+        } else {
+            Toast.makeText(activity!!, APP_TOAST_BLUETOOTH_MISSING + "\n" + APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE, Toast.LENGTH_SHORT).show()
         }
-        exerciseViewModel.enableSearch()
     }
 
     private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -112,23 +113,18 @@ class ExerciseFragment : Fragment() {
             Log.d("APP_CHECKER", "Receive event was called:")
             when (intent.action) {
                 BluetoothAdapter.ACTION_DISCOVERY_STARTED -> {
-                    //btnEnableSearch.setText(android.R.string.stop_search)
-                    //pbProgress!!.visibility = View.VISIBLE
-                    //setListAdapter(MainActivity.BT_SEARCH)
                     Log.d("APP_CHECKER", "Discovery started")
                 }
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
-                    //btnEnableSearch.setText(android.R.string.start_search)
-                    //pbProgress!!.visibility = View.GONE
+                    exerciseViewModel.findRelevantDevice()
                     Log.d("APP_CHECKER", "Discovery finished")
                 }
                 BluetoothDevice.ACTION_FOUND -> {
                     val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                     if (device != null) {
                         exerciseViewModel.addDevice(device)
-                        //listAdapter.notifyDataSetChanged()
+                        Log.d("APP_CHECKER", "Device found")
                     }
-                    Log.d("APP_CHECKER", "Device found")
                 }
             }
         }
