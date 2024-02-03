@@ -8,13 +8,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.eyetrainer.R
-import com.example.eyetrainer.ViewModel.ChoiceFragmentViewModel
+import com.example.eyetrainer.ViewModel.ExerciseViewModel
 import com.example.eyetrainer.databinding.FragmentCurrentExerciseBinding
 
 
 class CurrentExerciseFragment : Fragment() {
 
-    private val choiceFragmentViewModel: ChoiceFragmentViewModel by activityViewModels()
+    private val exerciseViewModel: ExerciseViewModel by activityViewModels()
     private lateinit var binding: FragmentCurrentExerciseBinding
 
     override fun onCreateView(
@@ -25,14 +25,12 @@ class CurrentExerciseFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val currentExercise = choiceFragmentViewModel.getExercise()
+        val currentExercise = exerciseViewModel.getExercise()
         binding.currentExerciseImage.setImageResource(currentExercise.image)
         binding.currentExerciseName.text = currentExercise.name
         binding.back.setOnClickListener {
             requireView().findNavController()
-                .navigate(R.id.action_currentExerciseFragment_to_choiceFragment)
+                .navigate(R.id.action_currentExerciseFragment_to_exerciseFragment)
         }
-
     }
-
 }

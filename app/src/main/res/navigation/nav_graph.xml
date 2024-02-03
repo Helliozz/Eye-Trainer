@@ -3,18 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navgraph"
-    app:startDestination="@id/choiceFragment">
+    app:startDestination="@id/exerciseFragment">
 
     <fragment
-        android:id="@+id/choiceFragment"
-        android:name="com.example.eyetrainer.UI.ChoiceFragment"
+        android:id="@+id/exerciseFragment"
+        android:name="com.example.eyetrainer.UI.ExerciseFragment"
         android:label="fragment_choice"
-        tools:layout="@layout/fragment_choice">
+        tools:layout="@layout/fragment_exercise">
         <action
-            android:id="@+id/action_choiceFragment_to_reminderFragment"
+            android:id="@+id/action_exerciseFragment_to_reminderFragment"
             app:destination="@id/reminderFragment" />
         <action
-            android:id="@+id/action_choiceFragment_to_currentExerciseFragment"
+            android:id="@+id/action_exerciseFragment_to_currentExerciseFragment"
             app:destination="@id/currentExerciseFragment" />
     </fragment>
     <fragment
@@ -23,9 +23,9 @@
         android:label="fragment_reminder"
         tools:layout="@layout/fragment_reminder">
         <action
-            android:id="@+id/action_reminderFragment_to_choiceFragment"
-            app:destination="@id/choiceFragment"
-            app:popUpTo="@id/choiceFragment"
+            android:id="@+id/action_reminderFragment_to_exerciseFragment"
+            app:destination="@id/exerciseFragment"
+            app:popUpTo="@id/exerciseFragment"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
@@ -34,9 +34,9 @@
         android:label="fragment_current_exercise"
         tools:layout="@layout/fragment_current_exercise">
         <action
-            android:id="@+id/action_currentExerciseFragment_to_choiceFragment"
-            app:destination="@id/choiceFragment"
-            app:popUpTo="@id/choiceFragment"
+            android:id="@+id/action_currentExerciseFragment_to_exerciseFragment"
+            app:destination="@id/exerciseFragment"
+            app:popUpTo="@id/exerciseFragment"
             app:popUpToInclusive="true" />
     </fragment>
 </navigation>

@@ -24,7 +24,8 @@ class ReminderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.exercise.setOnClickListener {
             requireView().findNavController()
-                .navigate(R.id.action_reminderFragment_to_choiceFragment)
+                .navigate(R.id.action_reminderFragment_to_exerciseFragment)
         }
     }
 }
+

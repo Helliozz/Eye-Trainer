@@ -1,16 +1,9 @@
-package com.example.eyetrainer.ViewModel
+package com.example.eyetrainer.Data
 
-import androidx.lifecycle.ViewModel
-import com.example.eyetrainer.Data.ExerciseItemData
-import com.example.eyetrainer.Data.SingleExercise
 import com.example.eyetrainer.R
 
-class ChoiceFragmentViewModel : ViewModel() {
-
-    private lateinit var savedExercise: SingleExercise
-
-
-    private val exercises: List<ExerciseItemData> = listOf(
+object Constants {
+    val APP_EXERCISES_BASE_LIST = listOf(
         ExerciseItemData(
             SingleExercise(R.drawable.icon_left_right, "влево-вправо"),
             SingleExercise(R.drawable.icon_up_down, "вверх-вниз"),
@@ -38,15 +31,8 @@ class ChoiceFragmentViewModel : ViewModel() {
         )
     )
 
-    fun getExercises(): List<ExerciseItemData> {
-        return exercises
-    }
-
-    fun saveExercise(singleExercise: SingleExercise) {
-        savedExercise = singleExercise
-    }
-
-    fun getExercise(): SingleExercise {
-        return savedExercise
-    }
+    const val APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE = "No data can be sent to any physical device."
+    const val APP_TOAST_BLUETOOTH_MISSING = "Sadly, you have no Bluetooth support."
 }
+
+

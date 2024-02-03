@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#3B2621"
-    tools:context=".UI.ChoiceFragment">
-
+    tools:context=".UI.ExerciseFragment">
 
     <LinearLayout
         android:id="@+id/linearLayout"
