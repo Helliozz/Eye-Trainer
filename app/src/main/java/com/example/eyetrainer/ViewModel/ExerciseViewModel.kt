@@ -1,6 +1,7 @@
 package com.example.eyetrainer.ViewModel
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
@@ -8,14 +9,17 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import com.example.eyetrainer.Bluetooth.ConnectedThread
 import com.example.eyetrainer.Bluetooth.ConnectionThread
-import com.example.eyetrainer.Data.Constants
 import com.example.eyetrainer.Data.Constants.APP_DEVICE_BLUETOOTH_ADDRESS
 import com.example.eyetrainer.Data.Constants.APP_EXERCISES_BASE_LIST
+import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_FAILED
+import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_SUCCESSFUL
 import com.example.eyetrainer.Data.ExerciseItemData
 import com.example.eyetrainer.Data.SingleExercise
+import java.nio.ByteBuffer
 
 
 @SuppressLint("MissingPermission")
@@ -26,7 +30,7 @@ class ExerciseViewModel : ViewModel() {
     private val exercises = ArrayList(APP_EXERCISES_BASE_LIST)
 
     private var bluetoothAdapter: BluetoothAdapter? = null
-    private val bluetoothDevices: ArrayList<BluetoothDevice> = arrayListOf()
+    private var bluetoothDevice: BluetoothDevice? = null
 
     private var connectionThread: ConnectionThread? = null
     private var connectedThread: ConnectedThread? = null
@@ -59,37 +63,68 @@ class ExerciseViewModel : ViewModel() {
         }
     }
 
-    fun uploadData(command: String) {
-        if (connectedThread != null && connectionThread != null && connectionThread!!.isConnected) {
-            connectedThread!!.write(command)
-        }
-    }
-
     fun addDevice(device: BluetoothDevice) {
-        if (bluetoothDevices.contains(device)) { return }
-        bluetoothDevices.add(device)
+        if (device.address != APP_DEVICE_BLUETOOTH_ADDRESS) { throw(Exception("Attempt to save a device with an invalid address.")) }
+        bluetoothDevice = device
         Log.d("APP_CHECKER", "Device added: ${device.name} (${device.address}).")
     }
 
-    fun findRelevantDevice() {
-        val connectedThreads: ArrayList<ConnectedThread> = arrayListOf()
-        bluetoothDevices.forEach {
-            if (it.address == APP_DEVICE_BLUETOOTH_ADDRESS) {
-                val currentConnectionThread = ConnectionThread(it,
-                    successFun = { socket ->
-                        val currentConnectedThread = ConnectedThread(socket)
-                        currentConnectedThread.start()
-                        connectedThreads.add(currentConnectedThread)
+    fun checkDeviceValidity(): Boolean {
+        return (bluetoothDevice != null && bluetoothDevice?.address == APP_DEVICE_BLUETOOTH_ADDRESS)
+    }
 
-                        connectedThread = currentConnectedThread
-                        Log.d("APP_CHECKER", "Connection to device ${it.name} (${it.bluetoothClass}) established.")
-                    },
-                    failFun = {
-                        Log.d("APP_CHECKER", "Connection to device ${it.name} (${it.bluetoothClass}) failed.")
-                    })
-                currentConnectionThread.start()
-                connectionThread = currentConnectionThread
+    fun connectToDevice(context: Context) {
+        val connectedThreads: ArrayList<ConnectedThread> = arrayListOf()
+        if (bluetoothDevice == null || bluetoothDevice?.address != APP_DEVICE_BLUETOOTH_ADDRESS) {
+            throw(Exception("Attempt to connect to an invalid device."))
+        }
+
+        val currentConnectionThread = ConnectionThread(bluetoothDevice!!,
+            successFun = { socket ->
+                (context as Activity).runOnUiThread {
+                    Toast.makeText(context, APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT).show()
+                }
+
+                val currentConnectedThread = ConnectedThread(socket)
+                currentConnectedThread.start()
+                connectedThreads.add(currentConnectedThread)
+
+                connectedThread = currentConnectedThread
+                Log.d("APP_CHECKER", "Connection to device ${bluetoothDevice!!.name} (${bluetoothDevice!!.bluetoothClass}) established.")
+            },
+            failFun = {
+                (context as Activity).runOnUiThread {
+                    Toast.makeText(context, APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_FAILED, Toast.LENGTH_SHORT).show()
+                }
+                Log.d("APP_CHECKER", "Connection to device ${bluetoothDevice!!.name} (${bluetoothDevice!!.bluetoothClass}) failed.")
+            })
+        currentConnectionThread.start()
+        connectionThread = currentConnectionThread
+    }
+
+    fun uploadData(exercise: SingleExercise = savedExercise) {
+        if (connectedThread != null && connectionThread != null && connectionThread!!.isConnected) {
+            val dataPackage: ArrayList<Byte> = arrayListOf()
+            dataPackage.add(getCheckedByte(exercise.points.size))
+            for (i in 0..63) {
+                if (exercise.points.size > i) {
+                    dataPackage.add(getCheckedByte(exercise.points[i].first))
+                    dataPackage.add(getCheckedByte(exercise.points[i].second))
+                } else {
+                    dataPackage.add(0)
+                    dataPackage.add(0)
+                }
             }
+
+            dataPackage.add(exercise.mirroring.toByte())
+            dataPackage.add((when (exercise.shouldDrawArrow) {
+                true -> 1
+                false -> 0
+            }).toByte())
+
+            connectedThread!!.writePackage(dataPackage.toByteArray())
+        } else {
+            throw(RuntimeException("Attempt to send data to not connected device."))
         }
     }
 
@@ -103,6 +138,15 @@ class ExerciseViewModel : ViewModel() {
 
     fun getExercise(): SingleExercise {
         return savedExercise
+    }
+
+    private fun getCheckedByte(command: Int): Byte {
+        val bytes = ByteBuffer.allocate(Int.SIZE_BYTES).putInt(command).array()
+        if (bytes[0].toInt() != 0 || bytes[1].toInt() != 0 || bytes[2].toInt() != 0) {
+            Log.d("APP_CHECKER", "Byte1 = ${bytes[0].toInt()}, Byte2 = ${bytes[1].toInt()},  Byte3 = ${bytes[2].toInt()}, Byte4 = ${bytes[3].toInt()}")
+            throw(RuntimeException("This number is too big to send."))
+        }
+        return bytes[3]
     }
 
 

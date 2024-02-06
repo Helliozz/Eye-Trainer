@@ -23,14 +23,30 @@ class ConnectedThread(bluetoothSocket: BluetoothSocket) : Thread() {
     }
 
     override fun run() {}
-    fun write(command: String) {
-        val bytes = command.toByteArray()
+
+    fun write(number: Int) {
         if (outputStream != null) {
+            val byteArray: ArrayList<Byte> = arrayListOf()
+            byteArray.add(number.toByte())
+
             try {
-                outputStream.write(bytes)
+                outputStream.write(byteArray.toByteArray())
                 outputStream.flush()
             } catch (e: IOException) {
                 e.printStackTrace()
+                throw(RuntimeException("Failed attempt to write to the device."))
+            }
+        }
+    }
+
+    fun writePackage(dataPackage: ByteArray) {
+        if (outputStream != null) {
+            try {
+                outputStream.write(dataPackage)
+                outputStream.flush()
+            } catch (e: IOException) {
+                e.printStackTrace()
+                throw(RuntimeException("Failed attempt to write to the device."))
             }
         }
     }

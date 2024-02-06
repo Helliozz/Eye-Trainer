@@ -23,16 +23,19 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.eyetrainer.Adapter.ChoiceRecyclerViewAdapter
+import com.example.eyetrainer.Data.Constants.APP_BLUETOOTH_PERMISSIONS_LIST
+import com.example.eyetrainer.Data.Constants.APP_DEVICE_BLUETOOTH_ADDRESS
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE
+import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUND
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_MISSING
 import com.example.eyetrainer.Data.SingleExercise
 import com.example.eyetrainer.R
 import com.example.eyetrainer.ViewModel.ExerciseViewModel
 import com.example.eyetrainer.databinding.FragmentExerciseBinding
 
+@Suppress("DEPRECATION")
 @RequiresApi(Build.VERSION_CODES.S)
 class ExerciseFragment : Fragment() {
-
     private lateinit var itemFun: (SingleExercise)->Unit
     private lateinit var binding: FragmentExerciseBinding
     private val recyclerViewAdapter by lazy { ChoiceRecyclerViewAdapter(itemFun) }
@@ -55,23 +58,20 @@ class ExerciseFragment : Fragment() {
             requireView().findNavController()
                 .navigate(R.id.action_exerciseFragment_to_reminderFragment)
         }
+
         recyclerViewAdapter.differ.submitList(exerciseViewModel.getExercises())
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(activity)
             adapter = recyclerViewAdapter
         }
 
-        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED ||
-            ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED ||
-            ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-            ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED  ) {
-            this.requestPermissions(arrayOf(
-                Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT,
-                Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
-                MainActivity.REQUEST_CODE_LOC)
-        } else {
-            initiateBluetoothSetup()
+        for (permission: String in APP_BLUETOOTH_PERMISSIONS_LIST) {
+            if (ActivityCompat.checkSelfPermission(activity!!, permission) != PackageManager.PERMISSION_GRANTED) {
+                this.requestPermissions(APP_BLUETOOTH_PERMISSIONS_LIST.toTypedArray(), MainActivity.REQUEST_CODE_LOC)
+                return
+            }
         }
+        initiateBluetoothSetup()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -104,7 +104,7 @@ class ExerciseFragment : Fragment() {
             registerReceiver(activity!!, receiver, filter, RECEIVER_EXPORTED)
             exerciseViewModel.enableSearch()
         } else {
-            Toast.makeText(activity!!, APP_TOAST_BLUETOOTH_MISSING + "\n" + APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE, Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity!!, "$APP_TOAST_BLUETOOTH_MISSING\n$APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -116,13 +116,18 @@ class ExerciseFragment : Fragment() {
                     Log.d("APP_CHECKER", "Discovery started")
                 }
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
-                    exerciseViewModel.findRelevantDevice()
+                    //exerciseViewModel.connectToDevice()
+                    if (!exerciseViewModel.checkDeviceValidity()) {
+                        Toast.makeText(activity!!, APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUND, Toast.LENGTH_SHORT).show()
+                    }
                     Log.d("APP_CHECKER", "Discovery finished")
                 }
                 BluetoothDevice.ACTION_FOUND -> {
                     val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
-                    if (device != null) {
+                    if (device != null && device.address == APP_DEVICE_BLUETOOTH_ADDRESS) {
                         exerciseViewModel.addDevice(device)
+                        exerciseViewModel.connectToDevice(activity!!)
+                        exerciseViewModel.enableSearch()
                         Log.d("APP_CHECKER", "Device found")
                     }
                 }

@@ -29,19 +29,10 @@ class ConnectionThread(private val device: BluetoothDevice, private val failFun:
             success = true
         } catch (e: IOException) {
             e.printStackTrace()
-            /*UiThreadStatement.runOnUiThread(Runnable {
-                Toast.makeText(
-                    this@MainActivity,
-                    "Не могу соединиться!",
-                    Toast.LENGTH_SHORT
-                ).show()
-            })*/
             failFun()
             cancel()
         }
         if (success) {
-            //connectedThread = ConnectedThread(bluetoothSocket)
-            //connectedThread!!.start()
             successFun(bluetoothSocket!!)
         }
     }
