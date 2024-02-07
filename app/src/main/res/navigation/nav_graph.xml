@@ -12,7 +12,8 @@
         tools:layout="@layout/fragment_exercise">
         <action
             android:id="@+id/action_exerciseFragment_to_reminderFragment"
-            app:destination="@id/reminderFragment" />
+            app:destination="@id/reminderFragment"
+            app:popUpTo="@id/reminderFragment"/>
         <action
             android:id="@+id/action_exerciseFragment_to_currentExerciseFragment"
             app:destination="@id/currentExerciseFragment" />
@@ -25,8 +26,7 @@
         <action
             android:id="@+id/action_reminderFragment_to_exerciseFragment"
             app:destination="@id/exerciseFragment"
-            app:popUpTo="@id/exerciseFragment"
-            app:popUpToInclusive="true" />
+            app:popUpTo="@id/exerciseFragment" />
     </fragment>
     <fragment
         android:id="@+id/currentExerciseFragment"
@@ -36,8 +36,7 @@
         <action
             android:id="@+id/action_currentExerciseFragment_to_exerciseFragment"
             app:destination="@id/exerciseFragment"
-            app:popUpTo="@id/exerciseFragment"
-            app:popUpToInclusive="true" />
+            app:popUpTo="@id/exerciseFragment" />
     </fragment>
     <fragment
         android:id="@+id/startFragment"
@@ -47,8 +46,8 @@
         <action
             android:id="@+id/action_startFragment_to_exerciseFragment"
             app:destination="@id/exerciseFragment"
-            app:popUpToInclusive="true"
-            app:popUpTo="@id/startFragment"/>
+            app:popUpTo="@id/startFragment"
+            app:popUpToInclusive="true"/>
         <action
             android:id="@+id/action_startFragment_to_reminderFragment"
             app:destination="@id/reminderFragment"

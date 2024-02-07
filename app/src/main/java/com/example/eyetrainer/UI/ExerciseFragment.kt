@@ -1,6 +1,5 @@
 package com.example.eyetrainer.UI
 
-import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
@@ -93,8 +92,9 @@ class ExerciseFragment : Fragment() {
     }
 
     private fun initiateBluetoothSetup() {
-        if (exerciseViewModel.isBluetoothAvailable() != null) { return }
-        exerciseViewModel.createBluetoothAdapter(activity!!)
+        if (exerciseViewModel.isBluetoothAvailable() == null) {
+            exerciseViewModel.createBluetoothAdapter(activity!!)
+        }
 
         if (exerciseViewModel.isBluetoothAvailable()!!) {
             val filter = IntentFilter()
@@ -136,7 +136,12 @@ class ExerciseFragment : Fragment() {
     }
 
     override fun onDestroy() {
-        activity!!.unregisterReceiver(receiver)
+        try {
+            activity!!.unregisterReceiver(receiver)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.d("APP_DEBUGGER", "Warning: attempt to unregister receiver that wasn't even registered!")
+        }
         super.onDestroy()
     }
 }

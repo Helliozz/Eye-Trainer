@@ -6,10 +6,12 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.eyetrainer.Bluetooth.ConnectedThread
 import com.example.eyetrainer.Bluetooth.ConnectionThread
@@ -19,9 +21,13 @@ import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DEVICE_CONNECTI
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_SUCCESSFUL
 import com.example.eyetrainer.Data.ExerciseItemData
 import com.example.eyetrainer.Data.SingleExercise
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
+import java.util.*
+import kotlin.collections.ArrayList
 
-
+@RequiresApi(Build.VERSION_CODES.S)
 @SuppressLint("MissingPermission")
 class ExerciseViewModel : ViewModel() {
     private var isBluetoothAvailable: Boolean? = null
@@ -34,6 +40,8 @@ class ExerciseViewModel : ViewModel() {
 
     private var connectionThread: ConnectionThread? = null
     private var connectedThread: ConnectedThread? = null
+
+    val dataCanBeSent: MutableLiveData<Boolean> = MutableLiveData(true)
 
     fun setBluetoothAvailable(available: Boolean) {
         isBluetoothAvailable = available
@@ -102,9 +110,10 @@ class ExerciseViewModel : ViewModel() {
         connectionThread = currentConnectionThread
     }
 
-    fun uploadData(exercise: SingleExercise = savedExercise) {
+    fun uploadData(exercise: SingleExercise = savedExercise): Boolean {
         if (connectedThread != null && connectionThread != null && connectionThread!!.isConnected) {
             val dataPackage: ArrayList<Byte> = arrayListOf()
+
             dataPackage.add(getCheckedByte(exercise.points.size))
             for (i in 0..63) {
                 if (exercise.points.size > i) {
@@ -123,9 +132,22 @@ class ExerciseViewModel : ViewModel() {
             }).toByte())
 
             connectedThread!!.writePackage(dataPackage.toByteArray())
+            return true
         } else {
-            throw(RuntimeException("Attempt to send data to not connected device."))
+            return false
         }
+    }
+
+    fun performTimerEvent(timerFun: () -> Unit, time: Long) {
+        val eventTimer = Timer()
+        val timerTask: TimerTask = object : TimerTask() {
+            override fun run() {
+                MainScope().launch {
+                    timerFun()
+                }
+            }
+        }
+        eventTimer.schedule(timerTask, time)
     }
 
     fun getExercises(): List<ExerciseItemData> {

@@ -45,6 +45,10 @@ dependencies {
     ksp "androidx.room:room-compiler:$room_version"
     implementation"androidx.room:room-ktx:$room_version"
 
+    //Flow&LiveData
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1"
+
     //appcompat
     def appcompat_version = "1.6.1"
     implementation "androidx.appcompat:appcompat:$appcompat_version"

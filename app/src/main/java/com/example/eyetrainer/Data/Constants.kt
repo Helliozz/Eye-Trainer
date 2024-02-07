@@ -33,11 +33,11 @@ object Constants {
             SingleExercise(R.drawable.icon_circle_left, "круг влево", arrayListOf(Pair(0,1), Pair(1,0), Pair(2,0), Pair(3,1), Pair(3,2), Pair(2,3), Pair(1,3), Pair(0,2))),
             SingleExercise(R.drawable.icon_circle_right, "круг вправо", arrayListOf(Pair(0,2), Pair(1,3), Pair(2,3), Pair(3,2), Pair(3,1), Pair(2,0), Pair(1,0), Pair(0,1)))
         ), ExerciseItemData(
-            SingleExercise(R.drawable.icon_rombus, "ромб", arrayListOf(Pair(0,1), Pair(1,0), Pair(2,1), Pair(1,2))),
+            SingleExercise(R.drawable.icon_rombus, "ромб", arrayListOf(Pair(0,1), Pair(1,0), Pair(2,1), Pair(1,2)), shouldDrawArrow = false),
             SingleExercise(R.drawable.icon_square, "квадрат", arrayListOf(Pair(0,0), Pair(1,0), Pair(1,1), Pair(0,1)))
         ), ExerciseItemData(
-            SingleExercise(R.drawable.icon_rainbow_1, "радуга 1", arrayListOf(Pair(0,1), Pair(1,0), Pair(2,0), Pair(1,0)), mirroring = APP_EXERCISE_MIRRORING_AXIS_Y),
-            SingleExercise(R.drawable.icon_rainbow_2, "радуга 2", arrayListOf(Pair(2,1), Pair(1,0), Pair(0,0), Pair(1,0)), mirroring = APP_EXERCISE_MIRRORING_AXIS_Y)
+            SingleExercise(R.drawable.icon_rainbow_1, "радуга 1", arrayListOf(Pair(2,1), Pair(1,0), Pair(0,0), Pair(1,0)), mirroring = APP_EXERCISE_MIRRORING_AXIS_Y),
+            SingleExercise(R.drawable.icon_rainbow_2, "радуга 2", arrayListOf(Pair(0,1), Pair(1,0), Pair(2,0), Pair(1,0)), mirroring = APP_EXERCISE_MIRRORING_AXIS_Y)
         ), ExerciseItemData(
             SingleExercise(R.drawable.icon_butterfly_1, "бантик 1", arrayListOf(Pair(0,0), Pair(1,0), Pair(2,0), Pair(1,1), Pair(0,2), Pair(1,2), Pair(2,2), Pair(1,1))),
             SingleExercise(R.drawable.icon_butterfly_2, "бантик 2", arrayListOf(Pair(0,0), Pair(1,1), Pair(2,2), Pair(2,1), Pair(2,0), Pair(1,1), Pair(0,2), Pair(0,1)))
@@ -46,9 +46,9 @@ object Constants {
             SingleExercise(R.drawable.icon_infinity, "бесконечность", arrayListOf(Pair(1,3), Pair(0,4), Pair(0,5), Pair(1,6), Pair(2,6), Pair(3,5), Pair(3,4), Pair(2,3), Pair(1,3), Pair(0,2), Pair(0,1), Pair(1,0), Pair(2,0), Pair(3,1), Pair(3,2), Pair(2,3))),
         ), ExerciseItemData(
             SingleExercise(R.drawable.icon_saw, "пила", arrayListOf(Pair(1,5), Pair(0,4), Pair(1,3), Pair(0,2), Pair(1,1), Pair(0,0), Pair(1,0), Pair(0,1), Pair(1,2), Pair(0,3), Pair(1,4), Pair(0,5)), shouldDrawArrow = false),
-            SingleExercise(R.drawable.icon_snake, "змея", arrayListOf(Pair(1,0), Pair(2,1), Pair(2,2), Pair(1,3), Pair(0,4), Pair(0,5), Pair(1,6), Pair(2,5), Pair(2,4), Pair(1,3), Pair(0,2), Pair(0,1)), shouldDrawArrow = false)
+            SingleExercise(R.drawable.icon_snake, "змея", arrayListOf(Pair(1,0), Pair(2,1), Pair(2,2), Pair(1,3), Pair(0,4), Pair(0,5), Pair(1,6), Pair(0,5), Pair(0,4), Pair(1,3), Pair(2,2), Pair(2,1)), shouldDrawArrow = false)
         ), ExerciseItemData(
-            SingleExercise(R.drawable.icon_ellipse, "овал", arrayListOf(Pair(0,1), Pair(1,0), Pair(2,0), Pair(3,1), Pair(3,2), Pair(3,3), Pair(2,4), Pair(2,4), Pair(1,4), Pair(0,3), Pair(0,2))),
+            SingleExercise(R.drawable.icon_ellipse, "овал", arrayListOf(Pair(1,0), Pair(0,1), Pair(0,2), Pair(1,3), Pair(2,3), Pair(3,3), Pair(4,3), Pair(5,2), Pair(5,1), Pair(4,0), Pair(3,0), Pair(2,0))),
             SingleExercise(R.drawable.icon_diagonal, "диагональ", arrayListOf(Pair(0,0), Pair(1,1), Pair(2,2), Pair(1,1)))
         )
     )
