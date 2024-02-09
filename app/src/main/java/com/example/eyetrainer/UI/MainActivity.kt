@@ -14,6 +14,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val REQUEST_CODE_LOC = 1
+        const val REQUEST_CODE_LOC_BLUETOOTH = 1
+        const val REQUEST_CODE_LOC_NOTIFICATION=2
     }
 }

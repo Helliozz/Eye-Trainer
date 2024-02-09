@@ -66,7 +66,7 @@ class ExerciseFragment : Fragment() {
 
         for (permission: String in APP_BLUETOOTH_PERMISSIONS_LIST) {
             if (ActivityCompat.checkSelfPermission(activity!!, permission) != PackageManager.PERMISSION_GRANTED) {
-                this.requestPermissions(APP_BLUETOOTH_PERMISSIONS_LIST.toTypedArray(), MainActivity.REQUEST_CODE_LOC)
+                this.requestPermissions(APP_BLUETOOTH_PERMISSIONS_LIST.toTypedArray(), MainActivity.REQUEST_CODE_LOC_BLUETOOTH)
                 return
             }
         }
@@ -76,7 +76,7 @@ class ExerciseFragment : Fragment() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            MainActivity.REQUEST_CODE_LOC -> if (grantResults.isNotEmpty()) {
+            MainActivity.REQUEST_CODE_LOC_BLUETOOTH -> if (grantResults.isNotEmpty()) {
                 for (gr in grantResults) {
                     // Check if request is granted or not
                     if (gr != PackageManager.PERMISSION_GRANTED) {

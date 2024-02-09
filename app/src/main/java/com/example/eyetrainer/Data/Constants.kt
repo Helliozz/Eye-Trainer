@@ -12,6 +12,7 @@ object Constants {
     const val APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUND = "No valid device was found."
     const val APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_SUCCESSFUL = "Successful connection!"
     const val APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_FAILED = "Failed to connect to the device."
+    const val APP_TOAST_NOTIFICATION_SENDING_NOT_AVAILABLE = "You will not be able to create or receive notifications."
     const val APP_DEVICE_BLUETOOTH_ADDRESS = "00:20:10:08:0B:EF"
 
     const val APP_EXERCISE_MIRRORING_NO_MIRROR = 0
