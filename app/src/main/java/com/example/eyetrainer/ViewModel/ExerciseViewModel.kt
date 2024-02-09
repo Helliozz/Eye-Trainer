@@ -42,6 +42,7 @@ class ExerciseViewModel : ViewModel() {
     private var connectedThread: ConnectedThread? = null
 
     val dataCanBeSent: MutableLiveData<Boolean> = MutableLiveData(true)
+    val bluetoothConnection: MutableLiveData<ConnectedThread> = MutableLiveData(connectedThread)
 
     fun setBluetoothAvailable(available: Boolean) {
         isBluetoothAvailable = available
@@ -61,13 +62,17 @@ class ExerciseViewModel : ViewModel() {
         setBluetoothAvailable(bluetoothAdapter != null)
     }
 
-    fun enableSearch(/*context: Context*/) {
-        if (bluetoothAdapter!!.isDiscovering) {
-            bluetoothAdapter!!.cancelDiscovery()
-        } else {
-            //accessLocationPermission(context)
+    fun enableSearch() {
+        if (!bluetoothAdapter!!.isDiscovering) {
             bluetoothAdapter!!.startDiscovery()
             Log.d("APP_CHECKER", "Discovery was started!")
+        }
+    }
+
+    fun disableSearch() {
+        if (bluetoothAdapter!!.isDiscovering) {
+            bluetoothAdapter!!.cancelDiscovery()
+            Log.d("APP_CHECKER", "Discovery was canceled!")
         }
     }
 
@@ -170,24 +175,5 @@ class ExerciseViewModel : ViewModel() {
         }
         return bytes[3]
     }
-
-
-    /*private fun accessLocationPermission(context: Context) {
-        val accessCoarseLocation: Int =
-            context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-        val accessFineLocation: Int =
-            context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-        val listRequestPermission: MutableList<String> = ArrayList()
-        if (accessCoarseLocation != PackageManager.PERMISSION_GRANTED) {
-            listRequestPermission.add(Manifest.permission.ACCESS_COARSE_LOCATION)
-        }
-        if (accessFineLocation != PackageManager.PERMISSION_GRANTED) {
-            listRequestPermission.add(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-        if (!listRequestPermission.isEmpty()) {
-            val strRequestPermission = listRequestPermission.toTypedArray()
-            (context as Activity).requestPermissions(strRequestPermission, MainActivity.REQUEST_CODE_LOC)
-        }
-    }*/
 }
 
