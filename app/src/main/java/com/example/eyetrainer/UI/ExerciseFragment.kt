@@ -85,7 +85,6 @@ class ExerciseFragment : Fragment() {
                         return
                     }
                 }
-                initiateBluetoothSetup()
             }
             else -> return
         }
@@ -116,7 +115,6 @@ class ExerciseFragment : Fragment() {
                     Log.d("APP_CHECKER", "Discovery started")
                 }
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
-                    //exerciseViewModel.connectToDevice()
                     if (!exerciseViewModel.checkDeviceValidity()) {
                         Toast.makeText(activity!!, APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUND, Toast.LENGTH_SHORT).show()
                     }
@@ -127,7 +125,7 @@ class ExerciseFragment : Fragment() {
                     if (device != null && device.address == APP_DEVICE_BLUETOOTH_ADDRESS) {
                         exerciseViewModel.addDevice(device)
                         exerciseViewModel.connectToDevice(activity!!)
-                        exerciseViewModel.enableSearch()
+                        exerciseViewModel.disableSearch()
                         Log.d("APP_CHECKER", "Device found")
                     }
                 }
@@ -136,11 +134,9 @@ class ExerciseFragment : Fragment() {
     }
 
     override fun onDestroy() {
-        try {
+        if (exerciseViewModel.isBluetoothAvailable() != null && exerciseViewModel.isBluetoothAvailable()!!) {
             activity!!.unregisterReceiver(receiver)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.d("APP_DEBUGGER", "Warning: attempt to unregister receiver that wasn't even registered!")
+            exerciseViewModel.disableSearch()
         }
         super.onDestroy()
     }
