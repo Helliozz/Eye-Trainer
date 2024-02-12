@@ -48,7 +48,7 @@
             app:track="@drawable/switch_custom_track" />
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/delete"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center_vertical"

@@ -13,11 +13,15 @@ object Constants {
     const val APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_SUCCESSFUL = "Successful connection!"
     const val APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_FAILED = "Failed to connect to the device."
     const val APP_TOAST_NOTIFICATION_SENDING_NOT_AVAILABLE = "You will not be able to create or receive notifications."
+    const val APP_TOAST_NO_DAY_CHOSEN = "No day was chosen for this notification."
     const val APP_DEVICE_BLUETOOTH_ADDRESS = "00:20:10:08:0B:EF"
 
     const val APP_EXERCISE_MIRRORING_NO_MIRROR = 0
     const val APP_EXERCISE_MIRRORING_AXIS_X = 1
     const val APP_EXERCISE_MIRRORING_AXIS_Y = 2
+
+    const val APP_KEY_DAY_CHECKSUM = "notification_checksum"
+    const val APP_KEY_CHANNEL_ID = "notifications_channel_id_101"
 
     val APP_BLUETOOTH_PERMISSIONS_LIST = listOf(
         Manifest.permission.BLUETOOTH_SCAN,
@@ -53,6 +57,8 @@ object Constants {
             SingleExercise(R.drawable.icon_diagonal, "диагональ", arrayListOf(Pair(0,0), Pair(1,1), Pair(2,2), Pair(1,1)))
         )
     )
+
+    val APP_NOTIFICATION_POW_TRANSLATION = listOf(6,0,1,2,3,4,5)
 }
 
 

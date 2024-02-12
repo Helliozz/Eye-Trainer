@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/reminderFragment"
-        android:name="com.example.eyetrainer.UI.ReminderFragment"
+        android:name="com.example.eyetrainer.UI.NotificationFragment"
         android:label="fragment_reminder"
         tools:layout="@layout/fragment_reminder">
         <action
