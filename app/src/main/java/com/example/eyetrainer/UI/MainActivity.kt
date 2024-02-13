@@ -30,21 +30,33 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.bluetooth_menu, menu)
 
         exerciseViewModel.performTimerEvent({
-            exerciseViewModel.bluetoothConnection.observe(this) { thread ->
-                val bluetoothItem: View? = findViewById(R.id.bluetooth)
-                Log.d("APP_DEBUGGER", "Attempt to set the color.")
-                bluetoothItem?.apply {
-                    Log.d("APP_DEBUGGER", "Color set called.")
-                    this.setBackgroundColor(
-                        getColor(when(thread != null && thread.checkConnection()) {
-                            true -> R.color.green
-                            false -> R.color.red
-                        }))
-                }
+            (findViewById<View>(R.id.bluetooth)).apply {
+                this.setBackgroundColor(getColor(R.color.red))
+            }
+
+            exerciseViewModel.connectedThread.observe(this) {
+                editBluetoothIcon()
+            }
+            exerciseViewModel.connectionThread.observe(this) { thread ->
+                editBluetoothIcon()
             }
         }, 100L)
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    fun editBluetoothIcon() {
+        (findViewById<View>(R.id.bluetooth)).apply {
+            Log.d("APP_DEBUGGER", "Attempt to set the color.")
+            (findViewById<View>(R.id.bluetooth)).apply {
+                Log.d("APP_DEBUGGER", "Color set called.")
+                this.setBackgroundColor(
+                    getColor(when(exerciseViewModel.connectionThread.value != null && exerciseViewModel.connectedThread.value != null && exerciseViewModel.connectedThread.value!!.checkConnection()) {
+                        true -> R.color.green
+                        false -> R.color.red
+                    }))
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -63,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val REQUEST_CODE_LOC_BLUETOOTH = 1
         const val REQUEST_CODE_LOC_NOTIFICATION = 2
+        const val REQUEST_CODE_LOC_BLUETOOTH = 4
     }
 }

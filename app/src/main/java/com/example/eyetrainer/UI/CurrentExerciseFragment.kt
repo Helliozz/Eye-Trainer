@@ -18,6 +18,7 @@ import com.example.eyetrainer.databinding.FragmentCurrentExerciseBinding
 import java.util.*
 
 
+@Suppress("DEPRECATION")
 class CurrentExerciseFragment : Fragment() {
 
     private val exerciseViewModel: ExerciseViewModel by activityViewModels()
@@ -49,6 +50,9 @@ class CurrentExerciseFragment : Fragment() {
 
             val dataWasSent = exerciseViewModel.uploadData()
             if (!dataWasSent) {
+                (activity!!.findViewById<View>(R.id.bluetooth)).apply {
+                    this.setBackgroundColor(resources.getColor(R.color.red))
+                }
                 Toast.makeText(activity!!, "$APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUND\n$APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE", Toast.LENGTH_SHORT).show()
             }
         }

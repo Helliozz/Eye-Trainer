@@ -85,6 +85,7 @@ class ExerciseFragment : Fragment() {
                         return
                     }
                 }
+                initiateBluetoothSetup()
             }
             else -> return
         }

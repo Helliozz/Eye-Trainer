@@ -38,11 +38,10 @@ class ExerciseViewModel : ViewModel() {
     private var bluetoothAdapter: BluetoothAdapter? = null
     private var bluetoothDevice: BluetoothDevice? = null
 
-    private var connectionThread: ConnectionThread? = null
-    private var connectedThread: ConnectedThread? = null
+    var connectionThread: MutableLiveData<ConnectionThread> = MutableLiveData()
+    var connectedThread: MutableLiveData<ConnectedThread> = MutableLiveData()
 
     val dataCanBeSent: MutableLiveData<Boolean> = MutableLiveData(true)
-    val bluetoothConnection: MutableLiveData<ConnectedThread> = MutableLiveData(connectedThread)
 
     fun setBluetoothAvailable(available: Boolean) {
         isBluetoothAvailable = available
@@ -102,7 +101,7 @@ class ExerciseViewModel : ViewModel() {
                 currentConnectedThread.start()
                 connectedThreads.add(currentConnectedThread)
 
-                connectedThread = currentConnectedThread
+                connectedThread.value = currentConnectedThread
                 Log.d("APP_CHECKER", "Connection to device ${bluetoothDevice!!.name} (${bluetoothDevice!!.bluetoothClass}) established.")
             },
             failFun = {
@@ -112,11 +111,11 @@ class ExerciseViewModel : ViewModel() {
                 Log.d("APP_CHECKER", "Connection to device ${bluetoothDevice!!.name} (${bluetoothDevice!!.bluetoothClass}) failed.")
             })
         currentConnectionThread.start()
-        connectionThread = currentConnectionThread
+        connectionThread.value = currentConnectionThread
     }
 
     fun uploadData(exercise: SingleExercise = savedExercise): Boolean {
-        if (connectedThread != null && connectionThread != null && connectionThread!!.isConnected) {
+        if (connectedThread.value != null && connectionThread.value != null && connectionThread.value!!.isConnected) {
             val dataPackage: ArrayList<Byte> = arrayListOf()
 
             dataPackage.add(getCheckedByte(exercise.points.size))
@@ -136,8 +135,7 @@ class ExerciseViewModel : ViewModel() {
                 false -> 0
             }).toByte())
 
-            connectedThread!!.writePackage(dataPackage.toByteArray())
-            return true
+            return connectedThread.value!!.writePackage(dataPackage.toByteArray())
         } else {
             return false
         }
