@@ -88,7 +88,7 @@ class NotificationViewModel(private val repository: NotificationRepository) : Vi
         }
 
         alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP, notification.time, 1000 * 60 * 60 * 24, alarmIntent
+            AlarmManager.RTC_WAKEUP, notification.time, AlarmManager.INTERVAL_DAY, alarmIntent
         )
     }
 

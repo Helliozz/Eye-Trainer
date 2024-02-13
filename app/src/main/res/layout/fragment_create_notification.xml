@@ -151,7 +151,7 @@
             android:layout_gravity="bottom"
             android:layout_weight="1"
             android:background="@drawable/background_button_active"
-            android:text="сохранить"
+            android:text="Сохранить"
             android:textColor="#000000"
             android:textSize="20sp" />
 
@@ -163,7 +163,7 @@
             android:layout_weight="1"
             android:background="@drawable/background_button_active"
             android:text="Назад"
-            android:textColor="#3B2621"
+            android:textColor="#000000"
             android:textSize="20sp" />
     </LinearLayout>
 

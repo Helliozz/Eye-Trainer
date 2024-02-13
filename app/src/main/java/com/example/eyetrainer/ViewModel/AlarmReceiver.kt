@@ -20,15 +20,12 @@ import com.example.eyetrainer.Data.Constants.APP_KEY_DAY_CHECKSUM
 import com.example.eyetrainer.Data.Constants.APP_NOTIFICATION_POW_TRANSLATION
 import com.example.eyetrainer.R
 import com.example.eyetrainer.UI.MainActivity
+import com.example.eyetrainer.UI.MainActivity.Companion.REQUEST_CODE_LOC_NOTIFICATION_MAIN_THREAD
 import java.text.SimpleDateFormat
 import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.S)
 class AlarmReceiver : BroadcastReceiver() {
-
-    private companion object {
-        private const val CHANNEL_ID = APP_KEY_CHANNEL_ID
-    }
 
     override fun onReceive(context: Context, intent: Intent) {
         Log.d("NotificationSample", "Attempt to send a notification.")
@@ -55,7 +52,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val name: CharSequence = "MyNotification"
         val description = "My notification chanel description"
         val importance = NotificationManager.IMPORTANCE_HIGH
-        val notificationChannel = NotificationChannel(CHANNEL_ID, name, importance)
+        val notificationChannel = NotificationChannel(APP_KEY_CHANNEL_ID, name, importance)
         notificationChannel.description = description
         val notificationManager =
             context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -67,9 +64,9 @@ class AlarmReceiver : BroadcastReceiver() {
         val mainIntent = Intent(context, MainActivity::class.java)
         mainIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         val mainPendingIntent =
-            PendingIntent.getActivity(context, 1, mainIntent, PendingIntent.FLAG_MUTABLE)
+            PendingIntent.getActivity(context, REQUEST_CODE_LOC_NOTIFICATION_MAIN_THREAD, mainIntent, PendingIntent.FLAG_MUTABLE)
 
-        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(context, APP_KEY_CHANNEL_ID)
         notificationBuilder.setSmallIcon(R.drawable.icon_notification)
         notificationBuilder.setContentTitle("Вы сегодня размяли глаза?")
         notificationBuilder.setContentText("Самое время зайти в приложение и повторить одно из полезных для глаз упражнений")

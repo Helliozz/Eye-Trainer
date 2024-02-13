@@ -46,7 +46,8 @@ class CreateNotificationFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (notificationViewModel.getSavedNotification() != null) {
+        val notificationAlreadyExists = (notificationViewModel.getSavedNotification() != null)
+        if (notificationAlreadyExists) {
             setupExistingNotification()
         }
 
@@ -61,7 +62,7 @@ class CreateNotificationFragment : Fragment() {
                 calendar.set(Calendar.SECOND, 0)
                 calendar.set(Calendar.MILLISECOND, 0)
 
-                val requestId: Int = if (notificationViewModel.getSavedNotification() != null) {
+                val requestId: Int = if (notificationAlreadyExists) {
                     notificationViewModel.getSavedNotification()!!.id
                 } else {
                     notificationViewModel.getPossibleId()
@@ -73,10 +74,12 @@ class CreateNotificationFragment : Fragment() {
                     id = requestId, time = calendar.timeInMillis, days = checkSum, isEnabled = true
                 )
 
-                notificationViewModel.cancelNotification(notificationInfo, context, alarmManager)
+                if (notificationAlreadyExists) {
+                    notificationViewModel.cancelNotification(notificationViewModel.getSavedNotification()!!, context, alarmManager)
+                }
                 notificationViewModel.setNewExactAlarm(notificationInfo, context, alarmManager)
 
-                if (notificationViewModel.getSavedNotification() != null) {
+                if (notificationAlreadyExists) {
                     notificationViewModel.update(notificationInfo)
                 } else {
                     notificationViewModel.insert(notificationInfo)
@@ -147,6 +150,7 @@ class CreateNotificationFragment : Fragment() {
         }
     }
 
+    /*
     override fun onAttach(context: Context) {
         super.onAttach(context)
         val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -160,4 +164,5 @@ class CreateNotificationFragment : Fragment() {
             this, callback
         )
     }
+    */
 }

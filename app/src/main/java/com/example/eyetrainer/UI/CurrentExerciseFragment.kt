@@ -50,14 +50,19 @@ class CurrentExerciseFragment : Fragment() {
 
             val dataWasSent = exerciseViewModel.uploadData()
             if (!dataWasSent) {
-                (activity!!.findViewById<View>(R.id.bluetooth)).apply {
-                    this.setBackgroundColor(resources.getColor(R.color.red))
-                }
+                exerciseViewModel.connectedThread.value = null
                 Toast.makeText(activity!!, "$APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUND\n$APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE", Toast.LENGTH_SHORT).show()
             }
         }
         exerciseViewModel.dataCanBeSent.observe(this) {
-            binding.send.isEnabled = it
+            binding.send.apply{
+                isEnabled = it
+                if (isEnabled) {
+                    setBackgroundResource(R.drawable.background_button_active)
+                } else {
+                    setBackgroundResource(R.drawable.background_button_disactive)
+                }
+            }
         }
     }
 }
