@@ -1,4 +1,4 @@
-package com.example.eyetrainer.Data
+package com.example.eyetrainer.Model
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
@@ -16,4 +16,7 @@ interface NotificationDao {
 
     @Query("DELETE FROM notification_table")
     suspend fun deleteAll()
+
+    @Update
+    suspend fun updateNotification(notification: NotificationData)
 }

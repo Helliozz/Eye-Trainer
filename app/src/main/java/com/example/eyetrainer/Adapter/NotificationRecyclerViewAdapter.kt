@@ -1,17 +1,23 @@
 package com.example.eyetrainer.Adapter
 
+import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.eyetrainer.Data.NotificationData
+import com.example.eyetrainer.Data.Constants.APP_NOTIFICATION_DAYS_LIST
+import com.example.eyetrainer.Model.NotificationData
 import com.example.eyetrainer.databinding.ItemRemindActiveBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
+@RequiresApi(Build.VERSION_CODES.S)
 class NotificationRecyclerViewAdapter(
+    val editNotification: (NotificationData) -> Unit,
     val deleteNotification: (NotificationData) -> Unit,
     val activateNotification: (NotificationData) -> Unit,
     val deactivateNotification: (NotificationData) -> Unit
@@ -31,7 +37,16 @@ class NotificationRecyclerViewAdapter(
                 val timeText = formatter.format(timeCalendar)
 
                 time.text = timeText
-                date.text = item.id.toString()
+
+                var dateString = ""
+                for (i in 0..6) {
+                    if ((item.days and Math.pow(2.0, i.toDouble()).toInt()) != 0) {
+                        dateString += "${APP_NOTIFICATION_DAYS_LIST[i]} "
+                    } else {
+                        Log.d("NotificationSample", "Not this day: day = ${APP_NOTIFICATION_DAYS_LIST[i]}, checkSum = ${item.days}")
+                    }
+                }
+                date.text = dateString
 
                 delete.setOnClickListener {
                     recycler.deactivateNotification(item)
@@ -41,14 +56,18 @@ class NotificationRecyclerViewAdapter(
                 }
 
                 currentState.isChecked = item.isEnabled
-                /*currentState.setOnCheckedChangeListener{v,checked ->
+                currentState.setOnCheckedChangeListener{v,checked ->
                     item.isEnabled = checked
                     if (checked) {
                         recycler.activateNotification(item)
                     } else {
                         recycler.deactivateNotification(item)
                     }
-                }*/
+                }
+
+                root.setOnClickListener {
+                    recycler.editNotification(item)
+                }
             }
         }
     }
@@ -73,13 +92,13 @@ class NotificationRecyclerViewAdapter(
         override fun areItemsTheSame(
             oldItem: NotificationData, newItem: NotificationData
         ): Boolean {
-            return oldItem.time == newItem.time && oldItem.days == newItem.days
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(
             oldItem: NotificationData, newItem: NotificationData
         ): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.time == newItem.time && oldItem.days == newItem.days
         }
     }
 

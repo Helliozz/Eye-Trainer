@@ -1,4 +1,4 @@
-package com.example.eyetrainer.Data
+package com.example.eyetrainer.Model
 
 import androidx.annotation.WorkerThread
 import kotlinx.coroutines.flow.Flow
@@ -9,7 +9,7 @@ class NotificationRepository(private val notificationDao: NotificationDao) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun insertNotification(notificationData:NotificationData){
+    suspend fun insertNotification(notificationData: NotificationData){
         notificationDao.insertNotification(notificationData)
     }
     @WorkerThread
@@ -17,4 +17,8 @@ class NotificationRepository(private val notificationDao: NotificationDao) {
         notificationDao.deleteNotification(notificationData)
     }
 
+    @WorkerThread
+    suspend fun updateNotification(notificationData: NotificationData){
+        notificationDao.updateNotification(notificationData)
+    }
 }

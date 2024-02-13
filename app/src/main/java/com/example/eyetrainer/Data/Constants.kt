@@ -59,6 +59,7 @@ object Constants {
     )
 
     val APP_NOTIFICATION_POW_TRANSLATION = listOf(6,0,1,2,3,4,5)
+    val APP_NOTIFICATION_DAYS_LIST = listOf("пн", "вт", "ср", "чт", "пт", "сб", "вс")
 }
 
 

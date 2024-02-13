@@ -29,6 +29,8 @@
             app:popUpTo="@id/exerciseFragment" />
         <action
             android:id="@+id/action_reminderFragment_to_createNotificationFragment"
+            app:popUpTo="@id/createNotificationFragment"
+            app:popUpToInclusive="true"
             app:destination="@id/createNotificationFragment" />
     </fragment>
     <fragment

@@ -1,4 +1,4 @@
-package com.example.eyetrainer.Data
+package com.example.eyetrainer.Model
 
 import android.content.Context
 import androidx.room.Database
@@ -30,7 +30,7 @@ abstract class NotificationRoomDatabase : RoomDatabase() {
 
             notificationDao.insertNotification(
                 NotificationData(
-                    id = 0, time = timeSet.timeInMillis, days = 1, isEnabled = true
+                    id = 10, time = timeSet.timeInMillis, days = 127, isEnabled = false
                 )
             )
         }

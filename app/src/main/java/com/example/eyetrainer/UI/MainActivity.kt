@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    fun editBluetoothIcon() {
+    private fun editBluetoothIcon() {
         (findViewById<View>(R.id.bluetooth)).apply {
             Log.d("APP_DEBUGGER", "Attempt to set the color.")
             (findViewById<View>(R.id.bluetooth)).apply {

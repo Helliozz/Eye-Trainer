@@ -1,8 +1,8 @@
 package com.example.eyetrainer
 
 import android.app.Application
-import com.example.eyetrainer.Data.NotificationRepository
-import com.example.eyetrainer.Data.NotificationRoomDatabase
+import com.example.eyetrainer.Model.NotificationRepository
+import com.example.eyetrainer.Model.NotificationRoomDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 

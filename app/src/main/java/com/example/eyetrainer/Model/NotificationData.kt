@@ -1,4 +1,4 @@
-package com.example.eyetrainer.Data
+package com.example.eyetrainer.Model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

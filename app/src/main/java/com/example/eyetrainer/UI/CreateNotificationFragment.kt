@@ -1,9 +1,7 @@
 package com.example.eyetrainer.UI
 
 import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -12,16 +10,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
-import com.example.eyetrainer.Data.Constants.APP_KEY_DAY_CHECKSUM
 import com.example.eyetrainer.Data.Constants.APP_TOAST_NO_DAY_CHOSEN
-import com.example.eyetrainer.Data.NotificationData
+import com.example.eyetrainer.Model.NotificationData
 import com.example.eyetrainer.NotificationsApplication
 import com.example.eyetrainer.R
-import com.example.eyetrainer.ViewModel.AlarmReceiver
 import com.example.eyetrainer.ViewModel.NotificationViewModel
 import com.example.eyetrainer.ViewModel.NotificationViewModelFactory
 import com.example.eyetrainer.databinding.FragmentCreateNotificationBinding
@@ -33,7 +30,6 @@ class CreateNotificationFragment : Fragment() {
     private val calendar = Calendar.getInstance()
     private lateinit var alarmManager: AlarmManager
     private lateinit var binding: FragmentCreateNotificationBinding
-    private lateinit var alarmIntent: PendingIntent
     private val notificationViewModel: NotificationViewModel by activityViewModels {
         NotificationViewModelFactory(
             (activity!!.application as NotificationsApplication).repository
@@ -44,12 +40,16 @@ class CreateNotificationFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentCreateNotificationBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if (notificationViewModel.getSavedNotification() != null) {
+            setupExistingNotification()
+        }
+
         alarmManager = requireActivity().getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         binding.save.setOnClickListener {
@@ -61,33 +61,28 @@ class CreateNotificationFragment : Fragment() {
                 calendar.set(Calendar.SECOND, 0)
                 calendar.set(Calendar.MILLISECOND, 0)
 
-                val requestId = notificationViewModel.getPossibleId()
-
-                notificationViewModel.insert(
-                    NotificationData(
-                        id = requestId, time = calendar.timeInMillis, days = checkSum, isEnabled = true
-                    )
-                )
-
-                Log.d("Notification", "checkSum = $checkSum")
-                //переменная room, в неё передаётся id, который потом вставляется в requestcode, ставится время срабатывания
-
-                alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-                    intent.putExtra(APP_KEY_DAY_CHECKSUM, checkSum)
-                    PendingIntent.getBroadcast(
-                        context, requestId, intent, PendingIntent.FLAG_IMMUTABLE
-
-                    )
+                val requestId: Int = if (notificationViewModel.getSavedNotification() != null) {
+                    notificationViewModel.getSavedNotification()!!.id
+                } else {
+                    notificationViewModel.getPossibleId()
                 }
 
-                alarmManager.setRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    calendar.timeInMillis,
-                    AlarmManager.INTERVAL_DAY,
-                    alarmIntent
+                Log.d("NotificationSample", "onViewCreated:  $checkSum")
+
+                val notificationInfo = NotificationData(
+                    id = requestId, time = calendar.timeInMillis, days = checkSum, isEnabled = true
                 )
 
-                Log.d("Notification", "Notification created")
+                notificationViewModel.cancelNotification(notificationInfo, context, alarmManager)
+                notificationViewModel.setNewExactAlarm(notificationInfo, context, alarmManager)
+
+                if (notificationViewModel.getSavedNotification() != null) {
+                    notificationViewModel.update(notificationInfo)
+                } else {
+                    notificationViewModel.insert(notificationInfo)
+                }
+
+                notificationViewModel.clearSavedNotification()
                 requireView().findNavController()
                     .navigate(R.id.action_createNotificationFragment_to_reminderFragment)
             }
@@ -99,6 +94,32 @@ class CreateNotificationFragment : Fragment() {
         }
 
         setupButtons()
+    }
+
+    private fun setupExistingNotification() {
+        checkSum = notificationViewModel.getSavedNotification()!!.days
+        for (i in 0..6) {
+            val btn = when (i) {
+                0 -> binding.mon
+                1 -> binding.tues
+                2 -> binding.wedn
+                3 -> binding.thurs
+                4 -> binding.fri
+                5 -> binding.sat
+                6 -> binding.sun
+                else -> throw (RuntimeException("Attempt to get a button for a non-existing day: day = $i."))
+            }
+            if ((checkSum and Math.pow(2.0, i.toDouble()).toInt()) == 0) {
+                btn.setBackgroundResource(R.drawable.background_button_disactive)
+            } else {
+                btn.setBackgroundResource(R.drawable.background_button_active)
+            }
+        }
+
+        val mCal = Calendar.getInstance()
+        mCal.timeInMillis = notificationViewModel.getSavedNotification()!!.time
+        binding.timePicker.hour = mCal.get(Calendar.HOUR_OF_DAY)
+        binding.timePicker.minute = mCal.get(Calendar.MINUTE)
     }
 
     private fun setupButtons() {
@@ -124,5 +145,19 @@ class CreateNotificationFragment : Fragment() {
                 btn.setBackgroundResource(R.drawable.background_button_active)
             }
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                requireView().findNavController()
+                    .navigate(R.id.action_createNotificationFragment_to_reminderFragment)
+
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this, callback
+        )
     }
 }

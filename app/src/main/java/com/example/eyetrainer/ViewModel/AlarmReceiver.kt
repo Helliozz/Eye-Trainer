@@ -31,20 +31,26 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d("Notification", "onReceive")
+        Log.d("NotificationSample", "Attempt to send a notification.")
+        if (isCorrectTime(intent)) {
+            sendNotification(context)
+        }
+    }
+
+    private fun isCorrectTime(intent: Intent): Boolean {
         val checkSum = intent.getIntExtra(APP_KEY_DAY_CHECKSUM, -1)
         val calendar = Calendar.getInstance()
         val pow = APP_NOTIFICATION_POW_TRANSLATION[calendar.get(Calendar.DAY_OF_WEEK)]
         val sum = Math.pow(2.0, pow.toDouble()).toInt()
-        if ((checkSum and sum) != 0) {
-            sendNotification(context, intent)
+        if ((checkSum and sum) == 0) {
+            Log.d("NotificationSample", "Incorrect day: day = $sum, checkSum = $checkSum")
         }
+        return (checkSum and sum) != 0
     }
 
-    private fun sendNotification(context: Context, intent: Intent) {
-//        val textTime = intent.getStringExtra("notification_time")
-//        val textId = intent.getIntExtra("notification_key", -1)
-
+    private fun sendNotification(
+        context: Context
+    ) {
         Log.d("Notification", "Notification sent")
         val name: CharSequence = "MyNotification"
         val description = "My notification chanel description"
@@ -66,22 +72,20 @@ class AlarmReceiver : BroadcastReceiver() {
         val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
         notificationBuilder.setSmallIcon(R.drawable.icon_notification)
         notificationBuilder.setContentTitle("Вы сегодня размяли глаза?")
-//        notificationBuilder.setContentTitle("time: $textTime, id = $textId")
         notificationBuilder.setContentText("Самое время зайти в приложение и повторить одно из полезных для глаз упражнений")
         notificationBuilder.priority = NotificationCompat.PRIORITY_HIGH
-
 
         notificationBuilder.setAutoCancel(true)
         notificationBuilder.setContentIntent(mainPendingIntent)
 
-
         val notificationManagerCompat = NotificationManagerCompat.from(context)
 
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                context, Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             return
         }
         notificationManagerCompat.notify(notificationId, notificationBuilder.build())
-
     }
 }
