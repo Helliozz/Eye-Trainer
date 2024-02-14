@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             (findViewById<View>(R.id.bluetooth)).apply {
                 Log.d("APP_DEBUGGER", "Color set called.")
                 this.setBackgroundColor(
-                    getColor(when(exerciseViewModel.connectionThread.value != null && exerciseViewModel.connectedThread.value != null && exerciseViewModel.connectedThread.value!!.checkConnection()) {
+                    getColor(when(exerciseViewModel.connectionThread.value != null && exerciseViewModel.connectionThread.value!!.isConnected && exerciseViewModel.connectedThread.value != null && exerciseViewModel.connectedThread.value!!.checkConnection()) {
                         true -> R.color.green
                         false -> R.color.red
                     }))

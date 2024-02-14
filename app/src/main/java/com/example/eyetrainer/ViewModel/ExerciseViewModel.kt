@@ -38,8 +38,8 @@ class ExerciseViewModel : ViewModel() {
     private var bluetoothAdapter: BluetoothAdapter? = null
     private var bluetoothDevice: BluetoothDevice? = null
 
-    var connectionThread: MutableLiveData<ConnectionThread> = MutableLiveData()
-    var connectedThread: MutableLiveData<ConnectedThread> = MutableLiveData()
+    var connectionThread: MutableLiveData<ConnectionThread?> = MutableLiveData(null)
+    var connectedThread: MutableLiveData<ConnectedThread?> = MutableLiveData(null)
 
     val dataCanBeSent: MutableLiveData<Boolean> = MutableLiveData(true)
 
@@ -108,6 +108,7 @@ class ExerciseViewModel : ViewModel() {
                 (context as Activity).runOnUiThread {
                     Toast.makeText(context, APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_FAILED, Toast.LENGTH_SHORT).show()
                 }
+                connectedThread.value = null
                 Log.d("APP_CHECKER", "Connection to device ${bluetoothDevice!!.name} (${bluetoothDevice!!.bluetoothClass}) failed.")
             })
         currentConnectionThread.start()
