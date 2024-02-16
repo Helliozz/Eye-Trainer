@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -149,20 +148,4 @@ class CreateNotificationFragment : Fragment() {
             }
         }
     }
-
-    /*
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                requireView().findNavController()
-                    .navigate(R.id.action_createNotificationFragment_to_reminderFragment)
-
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(
-            this, callback
-        )
-    }
-    */
 }

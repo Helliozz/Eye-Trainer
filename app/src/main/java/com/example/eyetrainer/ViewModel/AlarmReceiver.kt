@@ -63,8 +63,12 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val mainIntent = Intent(context, MainActivity::class.java)
         mainIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        val mainPendingIntent =
-            PendingIntent.getActivity(context, REQUEST_CODE_LOC_NOTIFICATION_MAIN_THREAD, mainIntent, PendingIntent.FLAG_MUTABLE)
+        val mainPendingIntent = PendingIntent.getActivity(
+            context,
+            REQUEST_CODE_LOC_NOTIFICATION_MAIN_THREAD,
+            mainIntent,
+            PendingIntent.FLAG_MUTABLE
+        )
 
         val notificationBuilder = NotificationCompat.Builder(context, APP_KEY_CHANNEL_ID)
         notificationBuilder.setSmallIcon(R.drawable.icon_notification)
