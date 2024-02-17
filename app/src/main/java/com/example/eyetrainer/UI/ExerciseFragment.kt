@@ -26,7 +26,7 @@ import com.example.eyetrainer.Data.Constants.APP_BLUETOOTH_PERMISSIONS_LIST
 import com.example.eyetrainer.Data.Constants.APP_DEVICE_BLUETOOTH_ADDRESS
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUND
-import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_MISSING
+import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_NOT_AVAILABLE
 import com.example.eyetrainer.Data.SingleExercise
 import com.example.eyetrainer.R
 import com.example.eyetrainer.ViewModel.ExerciseViewModel
@@ -92,51 +92,17 @@ class ExerciseFragment : Fragment() {
     }
 
     private fun initiateBluetoothSetup() {
-        if (exerciseViewModel.isBluetoothAvailable() == null) {
-            exerciseViewModel.createBluetoothAdapter(activity!!)
-        }
+        exerciseViewModel.updateBluetoothAdapter(activity!!)
 
         if (exerciseViewModel.isBluetoothAvailable()!!) {
-            val filter = IntentFilter()
-            filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
-            filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
-            filter.addAction(BluetoothDevice.ACTION_FOUND)
-            registerReceiver(activity!!, receiver, filter, RECEIVER_EXPORTED)
             exerciseViewModel.enableSearch()
         } else {
-            Toast.makeText(activity!!, "$APP_TOAST_BLUETOOTH_MISSING\n$APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            Log.d("APP_CHECKER", "Receive event was called:")
-            when (intent.action) {
-                BluetoothAdapter.ACTION_DISCOVERY_STARTED -> {
-                    Log.d("APP_CHECKER", "Discovery started")
-                }
-                BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
-                    if (!exerciseViewModel.checkDeviceValidity()) {
-                        Toast.makeText(activity!!, APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUND, Toast.LENGTH_SHORT).show()
-                    }
-                    Log.d("APP_CHECKER", "Discovery finished")
-                }
-                BluetoothDevice.ACTION_FOUND -> {
-                    val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
-                    if (device != null && device.address == APP_DEVICE_BLUETOOTH_ADDRESS) {
-                        exerciseViewModel.addDevice(device)
-                        exerciseViewModel.connectToDevice(activity!!)
-                        exerciseViewModel.disableSearch()
-                        Log.d("APP_CHECKER", "Device found")
-                    }
-                }
-            }
+            Toast.makeText(activity!!, "$APP_TOAST_BLUETOOTH_NOT_AVAILABLE\n$APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onDestroy() {
-        if (exerciseViewModel.isBluetoothAvailable() != null && exerciseViewModel.isBluetoothAvailable()!!) {
-            activity!!.unregisterReceiver(receiver)
+        if (exerciseViewModel.isBluetoothAvailable() == true) {
             exerciseViewModel.disableSearch()
         }
         super.onDestroy()

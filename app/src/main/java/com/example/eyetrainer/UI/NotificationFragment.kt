@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -16,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.eyetrainer.Adapter.NotificationRecyclerViewAdapter
+import com.example.eyetrainer.Data.Constants.APP_TOAST_NOTIFICATION_SENDING_NOT_AVAILABLE
 import com.example.eyetrainer.Model.NotificationData
 import com.example.eyetrainer.NotificationsApplication
 import com.example.eyetrainer.R
@@ -54,6 +56,22 @@ class NotificationFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.exercise.setOnClickListener {
+            requireView().findNavController()
+                .navigate(R.id.action_reminderFragment_to_exerciseFragment)
+        }
+
+        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            this.requestPermissions(
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                MainActivity.REQUEST_CODE_LOC_NOTIFICATION
+            )
+            return
+        }
+        setupRecyclerView()
+    }
+
+    private fun setupRecyclerView() {
         setupFunctions()
 
         recyclerViewAdapter.differ.submitList(notificationViewModel.notifications.value)
@@ -62,27 +80,10 @@ class NotificationFragment : Fragment() {
             adapter = recyclerViewAdapter
         }
 
-
-        binding.exercise.setOnClickListener {
-            requireView().findNavController()
-                .navigate(R.id.action_reminderFragment_to_exerciseFragment)
-        }
         binding.addRemind.setOnClickListener {
             notificationViewModel.clearSavedNotification()
             requireView().findNavController()
                 .navigate(R.id.action_reminderFragment_to_createNotificationFragment)
-        }
-
-
-        if (ActivityCompat.checkSelfPermission(
-                activity!!, Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            this.requestPermissions(
-                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                MainActivity.REQUEST_CODE_LOC_NOTIFICATION
-            )
-            return
         }
     }
 
@@ -113,6 +114,23 @@ class NotificationFragment : Fragment() {
                     recyclerViewAdapter.notifyDataSetChanged()
                 }, 50L)
             }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            MainActivity.REQUEST_CODE_LOC_NOTIFICATION -> if (grantResults.isNotEmpty()) {
+                for (gr in grantResults) {
+                    // Check if request is granted or not
+                    if (gr != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(activity!!, APP_TOAST_NOTIFICATION_SENDING_NOT_AVAILABLE, Toast.LENGTH_SHORT).show()
+                        return
+                    }
+                }
+                setupRecyclerView()
+            }
+            else -> return
         }
     }
 

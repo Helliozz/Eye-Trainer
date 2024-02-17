@@ -98,19 +98,23 @@ class CreateNotificationFragment : Fragment() {
         setupButtons()
     }
 
+    private fun getButton(day: Int): Button {
+        return when(day) {
+            0 -> binding.mon
+            1 -> binding.tues
+            2 -> binding.wedn
+            3 -> binding.thurs
+            4 -> binding.fri
+            5 -> binding.sat
+            6 -> binding.sun
+            else -> throw (RuntimeException("Attempt to get a button for a non-existing day: day = $day."))
+        }
+    }
+
     private fun setupExistingNotification() {
         checkSum = notificationViewModel.getSavedNotification()!!.days
         for (i in 0..6) {
-            val btn = when (i) {
-                0 -> binding.mon
-                1 -> binding.tues
-                2 -> binding.wedn
-                3 -> binding.thurs
-                4 -> binding.fri
-                5 -> binding.sat
-                6 -> binding.sun
-                else -> throw (RuntimeException("Attempt to get a button for a non-existing day: day = $i."))
-            }
+            val btn = getButton(i)
             if ((checkSum and Math.pow(2.0, i.toDouble()).toInt()) == 0) {
                 btn.setBackgroundResource(R.drawable.background_button_disactive)
             } else {
@@ -125,13 +129,9 @@ class CreateNotificationFragment : Fragment() {
     }
 
     private fun setupButtons() {
-        setupButton(binding.mon, 0)
-        setupButton(binding.tues, 1)
-        setupButton(binding.wedn, 2)
-        setupButton(binding.thurs, 3)
-        setupButton(binding.fri, 4)
-        setupButton(binding.sat, 5)
-        setupButton(binding.sun, 6)
+        for (i in 0..6) {
+            setupButton(getButton(i), i)
+        }
     }
 
     private fun setupButton(btn: Button, pow: Int) {

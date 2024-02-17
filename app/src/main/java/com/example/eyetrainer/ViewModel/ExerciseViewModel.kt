@@ -51,14 +51,10 @@ class ExerciseViewModel : ViewModel() {
         return isBluetoothAvailable
     }
 
-    fun createBluetoothAdapter(context: Context) {
-        val bluetoothManager: BluetoothManager = ContextCompat.getSystemService(context, BluetoothManager::class.java)!!
-        bluetoothAdapter = bluetoothManager.adapter
-        if (bluetoothAdapter == null) {
-            // Device doesn't support Bluetooth
-            setBluetoothAvailable(false)
-        }
-        setBluetoothAvailable(bluetoothAdapter != null)
+    fun updateBluetoothAdapter(context: Context) {
+        val bluetoothManager: BluetoothManager? = ContextCompat.getSystemService(context, BluetoothManager::class.java)
+        bluetoothAdapter = bluetoothManager?.adapter
+        setBluetoothAvailable(bluetoothAdapter != null && bluetoothAdapter!!.isEnabled)
     }
 
     fun enableSearch() {
