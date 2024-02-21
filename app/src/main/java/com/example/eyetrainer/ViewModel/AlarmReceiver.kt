@@ -38,11 +38,11 @@ class AlarmReceiver : BroadcastReceiver() {
         val checkSum = intent.getIntExtra(APP_KEY_DAY_CHECKSUM, -1)
         val calendar = Calendar.getInstance()
         val pow = APP_NOTIFICATION_POW_TRANSLATION[calendar.get(Calendar.DAY_OF_WEEK)]
+
         val sum = Math.pow(2.0, pow.toDouble()).toInt()
-        if ((checkSum and sum) == 0) {
-            Log.d("NotificationSample", "Incorrect day: day = $sum, checkSum = $checkSum")
-        }
-        return (checkSum and sum) != 0
+        val result = ((checkSum and sum) != 0)
+        Log.d("NotificationSample", "daySum = $sum, checkSum = $checkSum, is day correct = $result.")
+        return result
     }
 
     private fun sendNotification(

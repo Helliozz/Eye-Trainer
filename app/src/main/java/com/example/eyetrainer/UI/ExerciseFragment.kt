@@ -1,15 +1,8 @@
 package com.example.eyetrainer.UI
 
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,9 +16,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.eyetrainer.Adapter.ChoiceRecyclerViewAdapter
 import com.example.eyetrainer.Data.Constants.APP_BLUETOOTH_PERMISSIONS_LIST
-import com.example.eyetrainer.Data.Constants.APP_DEVICE_BLUETOOTH_ADDRESS
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE
-import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUND
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_NOT_AVAILABLE
 import com.example.eyetrainer.Data.SingleExercise
 import com.example.eyetrainer.R

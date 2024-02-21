@@ -6,9 +6,11 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.example.eyetrainer.Data.Constants
+import com.example.eyetrainer.Data.Constants.APP_KEY_DAY_CHECKSUM
 import com.example.eyetrainer.Model.NotificationData
 import com.example.eyetrainer.Model.NotificationRepository
 import kotlinx.coroutines.MainScope
@@ -80,10 +82,11 @@ class NotificationViewModel(private val repository: NotificationRepository) : Vi
         alarmManager: AlarmManager,
     ) {
         val alarmIntent: PendingIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-            intent.putExtra(Constants.APP_KEY_DAY_CHECKSUM, notification.days)
+            Log.d("NotificationSample", "days = ${notification.days}, identifier = ${notification.id}.")
+            intent.putExtra(APP_KEY_DAY_CHECKSUM, notification.days)
 
             PendingIntent.getBroadcast(
-                context, notification.id, intent, PendingIntent.FLAG_IMMUTABLE
+                context, notification.id, intent, PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_MUTABLE
             )
         }
 
@@ -94,18 +97,16 @@ class NotificationViewModel(private val repository: NotificationRepository) : Vi
 
     fun activateNotification(notification: NotificationData, context: Context?, alarmManager: AlarmManager) {
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-            intent.putExtra(Constants.APP_KEY_DAY_CHECKSUM, notification.days)
+            Log.d("NotificationSample", "days = ${notification.days}, identifier = ${notification.id}.")
+            intent.putExtra(APP_KEY_DAY_CHECKSUM, notification.days)
             PendingIntent.getBroadcast(
                 context, /*Идентификационный номер, должен быть уникальным (можно заменить id)*/
-                notification.id, intent, PendingIntent.FLAG_IMMUTABLE
+                notification.id, intent, PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_MUTABLE
             )
         }
 
         alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            notification.time,
-            AlarmManager.INTERVAL_DAY,
-            alarmIntent
+            AlarmManager.RTC_WAKEUP, notification.time, AlarmManager.INTERVAL_DAY, alarmIntent
         )
     }
 
@@ -113,7 +114,7 @@ class NotificationViewModel(private val repository: NotificationRepository) : Vi
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
             PendingIntent.getBroadcast(
                 context, /*Идентификационный номер, должен быть уникальным (можно заменить id)*/
-                notification.id, intent, PendingIntent.FLAG_IMMUTABLE
+                notification.id, intent, PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_MUTABLE
             )
         }
         alarmManager.cancel(alarmIntent)
