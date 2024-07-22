@@ -6,7 +6,7 @@ import androidx.annotation.RequiresApi
 import com.example.eyetrainer.R
 
 @RequiresApi(Build.VERSION_CODES.S)
-object Constants {
+object Constants { 
     const val APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE = "No data can be sent to a physical device."
     const val APP_TOAST_BLUETOOTH_NOT_AVAILABLE = "Sadly, you have no Bluetooth support."
     const val APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUND = "No valid device was found."
@@ -14,11 +14,14 @@ object Constants {
     const val APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_FAILED = "Failed to connect to the device."
     const val APP_TOAST_NOTIFICATION_SENDING_NOT_AVAILABLE = "You will not be able to create or receive notifications."
     const val APP_TOAST_NO_DAY_CHOSEN = "No day was chosen for this notification."
-    const val APP_DEVICE_BLUETOOTH_ADDRESS = "00:20:10:08:0B:EF"
+    const val APP_DEVICE_BLUETOOTH_ADDRESS = "98:DA:60:06:03:BC"
 
     const val APP_EXERCISE_MIRRORING_NO_MIRROR = 0
     const val APP_EXERCISE_MIRRORING_AXIS_X = 1
     const val APP_EXERCISE_MIRRORING_AXIS_Y = 2
+    const val APP_EXERCISE_SECURITY_CODE_LENGTH = 10
+    const val APP_EXERCISE_SECURITY_CODE_CONDENSED = 470
+    const val APP_EXERCISE_DATAPACKAGE_TOTAL_SIZE = (APP_EXERCISE_SECURITY_CODE_LENGTH * 2 + 128 + 3)
 
     const val APP_KEY_DAY_CHECKSUM = "notification_checksum"
     const val APP_KEY_CHANNEL_ID = "notifications_channel_id_101"

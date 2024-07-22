@@ -17,6 +17,9 @@ import com.example.eyetrainer.Bluetooth.ConnectedThread
 import com.example.eyetrainer.Bluetooth.ConnectionThread
 import com.example.eyetrainer.Data.Constants.APP_DEVICE_BLUETOOTH_ADDRESS
 import com.example.eyetrainer.Data.Constants.APP_EXERCISES_BASE_LIST
+import com.example.eyetrainer.Data.Constants.APP_EXERCISE_DATAPACKAGE_TOTAL_SIZE
+import com.example.eyetrainer.Data.Constants.APP_EXERCISE_SECURITY_CODE_CONDENSED
+import com.example.eyetrainer.Data.Constants.APP_EXERCISE_SECURITY_CODE_LENGTH
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_FAILED
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_SUCCESSFUL
 import com.example.eyetrainer.Data.ExerciseItemData
@@ -115,6 +118,12 @@ class ExerciseViewModel : ViewModel() {
         if (connectedThread.value != null && connectionThread.value != null && connectionThread.value!!.isConnected) {
             val dataPackage: ArrayList<Byte> = arrayListOf()
 
+            var securityCodeDuplicate = APP_EXERCISE_SECURITY_CODE_CONDENSED
+            for (i in 1..APP_EXERCISE_SECURITY_CODE_LENGTH) {
+                dataPackage.add(getCheckedByte(securityCodeDuplicate % 2))
+                securityCodeDuplicate /= 2
+            }
+
             dataPackage.add(getCheckedByte(exercise.points.size))
             for (i in 0..63) {
                 if (exercise.points.size > i) {
@@ -131,6 +140,15 @@ class ExerciseViewModel : ViewModel() {
                 true -> 1
                 false -> 0
             }).toByte())
+
+            securityCodeDuplicate = APP_EXERCISE_SECURITY_CODE_CONDENSED
+            for (i in 1..APP_EXERCISE_SECURITY_CODE_LENGTH) {
+                dataPackage.add(0)
+            }
+            for (i in 1..APP_EXERCISE_SECURITY_CODE_LENGTH) {
+                dataPackage[APP_EXERCISE_DATAPACKAGE_TOTAL_SIZE - i] = getCheckedByte(securityCodeDuplicate % 2)
+                securityCodeDuplicate /= 2
+            }
 
             return connectedThread.value!!.writePackage(dataPackage.toByteArray())
         } else {
