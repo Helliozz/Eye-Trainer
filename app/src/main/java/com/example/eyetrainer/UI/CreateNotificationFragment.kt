@@ -31,7 +31,7 @@ class CreateNotificationFragment : Fragment() {
     private lateinit var binding: FragmentCreateNotificationBinding
     private val notificationViewModel: NotificationViewModel by activityViewModels {
         NotificationViewModelFactory(
-            (activity!!.application as NotificationsApplication).repository
+            (requireActivity().application as NotificationsApplication).repository
         )
     }
     private var checkSum = 127
@@ -54,7 +54,7 @@ class CreateNotificationFragment : Fragment() {
 
         binding.save.setOnClickListener {
             if (checkSum == 0) {
-                Toast.makeText(activity!!, APP_TOAST_NO_DAY_CHOSEN, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), APP_TOAST_NO_DAY_CHOSEN, Toast.LENGTH_SHORT).show()
             } else {
                 calendar.set(Calendar.HOUR_OF_DAY, binding.timePicker.hour)
                 calendar.set(Calendar.MINUTE, binding.timePicker.minute)

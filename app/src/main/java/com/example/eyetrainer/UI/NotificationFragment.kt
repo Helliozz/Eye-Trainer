@@ -24,7 +24,6 @@ import com.example.eyetrainer.R
 import com.example.eyetrainer.ViewModel.NotificationViewModel
 import com.example.eyetrainer.ViewModel.NotificationViewModelFactory
 import com.example.eyetrainer.databinding.FragmentReminderBinding
-import java.util.*
 
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -43,7 +42,7 @@ class NotificationFragment : Fragment() {
     }
     private val notificationViewModel: NotificationViewModel by activityViewModels {
         NotificationViewModelFactory(
-            (activity!!.application as NotificationsApplication).repository
+            (requireActivity().application as NotificationsApplication).repository
         )
     }
 
@@ -61,7 +60,7 @@ class NotificationFragment : Fragment() {
                 .navigate(R.id.action_reminderFragment_to_exerciseFragment)
         }
 
-        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             this.requestPermissions(
                 arrayOf(Manifest.permission.POST_NOTIFICATIONS),
                 MainActivity.REQUEST_CODE_LOC_NOTIFICATION
@@ -124,7 +123,7 @@ class NotificationFragment : Fragment() {
                 for (gr in grantResults) {
                     // Check if request is granted or not
                     if (gr != PackageManager.PERMISSION_GRANTED) {
-                        Toast.makeText(activity!!, APP_TOAST_NOTIFICATION_SENDING_NOT_AVAILABLE, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireActivity(), APP_TOAST_NOTIFICATION_SENDING_NOT_AVAILABLE, Toast.LENGTH_SHORT).show()
                         return
                     }
                 }

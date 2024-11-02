@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
@@ -56,7 +55,7 @@ class ExerciseFragment : Fragment() {
         }
 
         for (permission: String in APP_BLUETOOTH_PERMISSIONS_LIST) {
-            if (ActivityCompat.checkSelfPermission(activity!!, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
                 this.requestPermissions(APP_BLUETOOTH_PERMISSIONS_LIST.toTypedArray(), MainActivity.REQUEST_CODE_LOC_BLUETOOTH)
                 return
             }
@@ -72,7 +71,7 @@ class ExerciseFragment : Fragment() {
                     // Check if request is granted or not
                     if (gr != PackageManager.PERMISSION_GRANTED) {
                         exerciseViewModel.setBluetoothAvailable(false)
-                        Toast.makeText(activity!!, APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireActivity(), APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE, Toast.LENGTH_SHORT).show()
                         return
                     }
                 }
@@ -83,12 +82,12 @@ class ExerciseFragment : Fragment() {
     }
 
     private fun initiateBluetoothSetup() {
-        exerciseViewModel.updateBluetoothAdapter(activity!!)
+        exerciseViewModel.updateBluetoothAdapter(requireActivity())
 
         if (exerciseViewModel.isBluetoothAvailable()!!) {
             exerciseViewModel.enableSearch()
         } else {
-            Toast.makeText(activity!!, "$APP_TOAST_BLUETOOTH_NOT_AVAILABLE\n$APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "$APP_TOAST_BLUETOOTH_NOT_AVAILABLE\n$APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE", Toast.LENGTH_SHORT).show()
         }
     }
 

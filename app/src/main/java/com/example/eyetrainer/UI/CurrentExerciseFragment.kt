@@ -15,7 +15,6 @@ import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUN
 import com.example.eyetrainer.R
 import com.example.eyetrainer.ViewModel.ExerciseViewModel
 import com.example.eyetrainer.databinding.FragmentCurrentExerciseBinding
-import java.util.*
 
 
 @Suppress("DEPRECATION")
@@ -51,7 +50,7 @@ class CurrentExerciseFragment : Fragment() {
             val dataWasSent = exerciseViewModel.uploadData()
             if (!dataWasSent) {
                 exerciseViewModel.connectedThread.value = null
-                Toast.makeText(activity!!, "$APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUND\n$APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), "$APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUND\n$APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE", Toast.LENGTH_SHORT).show()
             }
         }
         exerciseViewModel.dataCanBeSent.observe(this) {

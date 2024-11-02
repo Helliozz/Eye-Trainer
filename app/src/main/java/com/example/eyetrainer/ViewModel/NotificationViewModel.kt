@@ -8,14 +8,18 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.*
-import com.example.eyetrainer.Data.Constants
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.eyetrainer.Data.Constants.APP_KEY_DAY_CHECKSUM
 import com.example.eyetrainer.Model.NotificationData
 import com.example.eyetrainer.Model.NotificationRepository
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 
 
 @RequiresApi(Build.VERSION_CODES.S)
