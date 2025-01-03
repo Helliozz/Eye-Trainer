@@ -21,6 +21,7 @@ import com.example.eyetrainer.Data.Constants.APP_DEVICE_BLUETOOTH_ADDRESS
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUND
 import com.example.eyetrainer.R
+import com.example.eyetrainer.Utils.Utils.performTimerEvent
 import com.example.eyetrainer.ViewModel.ExerciseViewModel
 import com.example.eyetrainer.databinding.ActivityMainBinding
 
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.bluetooth_menu, menu)
 
-        exerciseViewModel.performTimerEvent({
+        performTimerEvent({
             (findViewById<View>(R.id.bluetooth)).apply {
                 this.setBackgroundColor(getColor(R.color.red))
             }

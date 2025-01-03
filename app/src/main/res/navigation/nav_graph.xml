@@ -34,6 +34,9 @@
         <action
             android:id="@+id/action_exerciseFragment_to_currentExerciseFragment"
             app:destination="@id/currentExerciseFragment" />
+        <action
+            android:id="@+id/action_exerciseFragment_to_createExerciseFragment"
+            app:destination="@id/createExerciseFragment" />
     </fragment>
     <fragment
         android:id="@+id/reminderFragment"
@@ -57,6 +60,9 @@
         <action
             android:id="@+id/action_currentExerciseFragment_to_exerciseFragment"
             app:popUpTo="@id/exerciseFragment" />
+        <action
+            android:id="@+id/action_currentExerciseFragment_to_createExerciseFragment"
+            app:destination="@id/createExerciseFragment" />
     </fragment>
     <fragment
         android:id="@+id/createNotificationFragment"
@@ -66,5 +72,17 @@
         <action
             android:id="@+id/action_createNotificationFragment_to_reminderFragment"
             app:popUpTo="@id/reminderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createExerciseFragment"
+        android:name="com.example.eyetrainer.UI.CreateExerciseFragment"
+        android:label="CreateExerciseFragment"
+        tools:layout="@layout/fragment_create_exercise">
+        <action
+            android:id="@+id/action_createExerciseFragment_to_currentExerciseFragment"
+            app:popUpTo="@id/exerciseFragment" />
+        <action
+            android:id="@+id/action_createExerciseFragment_to_exerciseFragment"
+            app:popUpTo="@id/exerciseFragment" />
     </fragment>
 </navigation>

@@ -150,7 +150,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="bottom"
             android:layout_weight="1"
-            android:background="@drawable/background_button_disactive"
+            android:background="@drawable/background_button_nonactive"
             android:text="Упражнение"
             android:textColor="#000000"
             android:textSize="20sp" />

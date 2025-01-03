@@ -116,7 +116,7 @@ class CreateNotificationFragment : Fragment() {
         for (i in 0..6) {
             val btn = getButton(i)
             if ((checkSum and Math.pow(2.0, i.toDouble()).toInt()) == 0) {
-                btn.setBackgroundResource(R.drawable.background_button_disactive)
+                btn.setBackgroundResource(R.drawable.background_button_nonactive)
             } else {
                 btn.setBackgroundResource(R.drawable.background_button_active)
             }
@@ -141,7 +141,7 @@ class CreateNotificationFragment : Fragment() {
             val prevEnabled = (checkSum and sum) != 0
             if (prevEnabled) {
                 checkSum -= sum
-                btn.setBackgroundResource(R.drawable.background_button_disactive)
+                btn.setBackgroundResource(R.drawable.background_button_nonactive)
             } else {
                 checkSum += sum
                 btn.setBackgroundResource(R.drawable.background_button_active)

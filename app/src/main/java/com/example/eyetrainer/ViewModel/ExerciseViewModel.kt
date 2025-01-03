@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import android.widget.GridLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -18,25 +19,33 @@ import com.example.eyetrainer.Bluetooth.ConnectionThread
 import com.example.eyetrainer.Data.Constants.APP_DEVICE_BLUETOOTH_ADDRESS
 import com.example.eyetrainer.Data.Constants.APP_EXERCISES_BASE_LIST
 import com.example.eyetrainer.Data.Constants.APP_EXERCISE_DATAPACKAGE_TOTAL_SIZE
+import com.example.eyetrainer.Data.Constants.APP_EXERCISE_MAX_CELLS
+import com.example.eyetrainer.Data.Constants.APP_EXERCISE_MIRRORING_AXIS_X
+import com.example.eyetrainer.Data.Constants.APP_EXERCISE_MIRRORING_AXIS_Y
+import com.example.eyetrainer.Data.Constants.APP_EXERCISE_MIRRORING_NO_MIRROR
+import com.example.eyetrainer.Data.Constants.APP_EXERCISE_PATTERN_DATA_LENGTH
 import com.example.eyetrainer.Data.Constants.APP_EXERCISE_SECURITY_CODE_CONDENSED
 import com.example.eyetrainer.Data.Constants.APP_EXERCISE_SECURITY_CODE_LENGTH
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_FAILED
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_SUCCESSFUL
 import com.example.eyetrainer.Data.ExerciseItemData
 import com.example.eyetrainer.Data.SingleExercise
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import java.nio.ByteBuffer
-import java.util.*
-import kotlin.collections.ArrayList
+import com.example.eyetrainer.R
+import com.example.eyetrainer.Utils.Utils.getCheckedByte
+import com.example.eyetrainer.Utils.Utils.getNewExerciseFromData
+import kotlin.math.abs
+
 
 @RequiresApi(Build.VERSION_CODES.S)
 @SuppressLint("MissingPermission")
 class ExerciseViewModel : ViewModel() {
     private var isBluetoothAvailable: Boolean? = null
 
-    private lateinit var savedExercise: SingleExercise
-    private val exercises = ArrayList(APP_EXERCISES_BASE_LIST)
+    private var chosenExercise: SingleExercise? = null
+    val exercises = MutableLiveData(ArrayList(APP_EXERCISES_BASE_LIST))
+
+    private lateinit var createdExerciseData: SingleExercise
+    private var createdExerciseSaved = false
 
     private var bluetoothAdapter: BluetoothAdapter? = null
     private var bluetoothDevice: BluetoothDevice? = null
@@ -114,7 +123,7 @@ class ExerciseViewModel : ViewModel() {
         connectionThread.value = currentConnectionThread
     }
 
-    fun uploadData(exercise: SingleExercise = savedExercise): Boolean {
+    fun uploadData(exercise: SingleExercise = chosenExercise!!): Boolean {
         if (connectedThread.value != null && connectionThread.value != null && connectionThread.value!!.isConnected) {
             val dataPackage: ArrayList<Byte> = arrayListOf()
 
@@ -125,7 +134,7 @@ class ExerciseViewModel : ViewModel() {
             }
 
             dataPackage.add(getCheckedByte(exercise.points.size))
-            for (i in 0..63) {
+            for (i in 0..<APP_EXERCISE_PATTERN_DATA_LENGTH) {
                 if (exercise.points.size > i) {
                     dataPackage.add(getCheckedByte(exercise.points[i].first))
                     dataPackage.add(getCheckedByte(exercise.points[i].second))
@@ -156,37 +165,85 @@ class ExerciseViewModel : ViewModel() {
         }
     }
 
-    fun performTimerEvent(timerFun: () -> Unit, time: Long) {
-        val eventTimer = Timer()
-        val timerTask: TimerTask = object : TimerTask() {
-            override fun run() {
-                MainScope().launch {
-                    timerFun()
-                }
+    fun getExercises(): ArrayList<ExerciseItemData> {
+        val exercisesList = ArrayList(exercises.value!!)
+        if (!createdExerciseSaved) {
+            val creationItem = SingleExercise(R.drawable.icon_addition, "создать своё")
+            exercisesList.add(creationItem)
+        }
+
+        val exerciseRecyclerList = arrayListOf<ExerciseItemData>()
+        for (i in 0..<exercisesList.size) {
+            if (exerciseRecyclerList.isNotEmpty() && exerciseRecyclerList.last().second == exercisesList[i]) {
+                continue
+            }
+
+            if ((exercisesList.size-1) - i >= 1) {
+                exerciseRecyclerList.add(ExerciseItemData(exerciseRecyclerList.size, exercisesList[i], exercisesList[i+1]))
+            } else {
+                exerciseRecyclerList.add(ExerciseItemData(exerciseRecyclerList.size, exercisesList[i]))
             }
         }
-        eventTimer.schedule(timerTask, time)
+        return exerciseRecyclerList
     }
 
-    fun getExercises(): List<ExerciseItemData> {
-        return exercises
+    fun chooseExercise(singleExercise: SingleExercise) {
+        chosenExercise = singleExercise
     }
 
-    fun saveExercise(singleExercise: SingleExercise) {
-        savedExercise = singleExercise
+    fun clearExercise() {
+        chosenExercise = null
     }
 
-    fun getExercise(): SingleExercise {
-        return savedExercise
+    fun getExercise(): SingleExercise? {
+        return chosenExercise
     }
 
-    private fun getCheckedByte(command: Int): Byte {
-        val bytes = ByteBuffer.allocate(Int.SIZE_BYTES).putInt(command).array()
-        if (bytes[0].toInt() != 0 || bytes[1].toInt() != 0 || bytes[2].toInt() != 0) {
-            Log.d("APP_CHECKER", "Byte1 = ${bytes[0].toInt()}, Byte2 = ${bytes[1].toInt()},  Byte3 = ${bytes[2].toInt()}, Byte4 = ${bytes[3].toInt()}")
-            throw(RuntimeException("This number is too big to send."))
+    fun exerciseCreationCellFunction(row: Int, col: Int, grid: GridLayout, pattern: ArrayList<Pair<Int, Int>>, patternMirroring: Int = APP_EXERCISE_MIRRORING_NO_MIRROR): Boolean {
+        pattern.add(Pair(row, col))
+        updateExerciseCellByPosition(row, col, grid, pattern)
+
+        for (i in 0..< APP_EXERCISE_MAX_CELLS) {
+            for (j in 0..< APP_EXERCISE_MAX_CELLS) {
+                if (i == row && j == col) continue
+                updateExerciseCellByPosition(i, j, grid, pattern, patternMirroring)
+            }
         }
-        return bytes[3]
+        return grid.getChildAt(pattern[0].first * APP_EXERCISE_MAX_CELLS + pattern[0].second).isEnabled
+    }
+
+    private fun updateExerciseCellByPosition(row: Int, col: Int, grid: GridLayout, pattern: ArrayList<Pair<Int, Int>>, patternMirroring: Int = APP_EXERCISE_MIRRORING_NO_MIRROR) {
+        val cell = grid.getChildAt(row * APP_EXERCISE_MAX_CELLS + col)
+        val selectedRow = pattern.last().first
+        val selectedCol = pattern.last().second
+
+        if ( (abs(row - selectedRow) >= 2 || abs(col - selectedCol) >= 2) || Pair(row, col) == pattern.last() || pattern.size >= APP_EXERCISE_PATTERN_DATA_LENGTH || (patternMirroring == APP_EXERCISE_MIRRORING_AXIS_X && row >= APP_EXERCISE_MAX_CELLS / 2) || (patternMirroring == APP_EXERCISE_MIRRORING_AXIS_Y && col >= APP_EXERCISE_MAX_CELLS / 2) ) {
+            cell.setBackgroundResource( when(pattern.contains(Pair(row, col))) {
+                true -> if (Pair(row, col) == pattern[0]) R.drawable.background_exercise_cell_first_nonactive else R.drawable.background_exercise_cell_chosen_nonactive
+                false -> R.drawable.background_exercise_cell_nonactive
+            })
+            cell.isEnabled = false
+        } else {
+            cell.setBackgroundResource( when(pattern.contains(Pair(row, col))) {
+                true -> if (Pair(row, col) == pattern[0]) R.drawable.background_exercise_cell_first_active else R.drawable.background_exercise_cell_chosen_active
+                false -> R.drawable.background_exercise_cell_active
+            })
+            cell.isEnabled = true
+        }
+    }
+
+    fun saveCreatedExercise(pattern: ArrayList<Pair<Int, Int>>, arrow: Boolean, mirroring: Int, grid: GridLayout) {
+        createdExerciseData = getNewExerciseFromData(pattern, arrow, mirroring, grid)
+
+        // Currently only one custom exercise is allowed
+        val exercisesVal = exercises.value!!
+        if (!createdExerciseSaved) {
+            exercisesVal.add(createdExerciseData)
+            createdExerciseSaved = true
+        } else {
+            exercisesVal[exercisesVal.lastIndex] = createdExerciseData
+        }
+        exercises.postValue(exercises.value)
     }
 }
 

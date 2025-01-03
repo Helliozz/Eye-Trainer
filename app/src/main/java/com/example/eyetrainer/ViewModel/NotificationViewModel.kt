@@ -1,6 +1,7 @@
 package com.example.eyetrainer.ViewModel
 
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -48,7 +49,7 @@ class NotificationViewModel(private val repository: NotificationRepository) : Vi
         repository.deleteNotification(notificationData)
     }
 
-    fun update(notificationData: NotificationData)=viewModelScope.launch {
+    fun update(notificationData: NotificationData) = viewModelScope.launch {
         repository.updateNotification(notificationData)
     }
 
@@ -66,18 +67,6 @@ class NotificationViewModel(private val repository: NotificationRepository) : Vi
             }
         }
         return newId
-    }
-
-    fun performTimerEvent(timerFun: () -> Unit, time: Long) {
-        val eventTimer = Timer()
-        val timerTask: TimerTask = object : TimerTask() {
-            override fun run() {
-                MainScope().launch {
-                    timerFun()
-                }
-            }
-        }
-        eventTimer.schedule(timerTask, time)
     }
 
     fun setNewExactAlarm(
@@ -99,6 +88,7 @@ class NotificationViewModel(private val repository: NotificationRepository) : Vi
         )
     }
 
+    @SuppressLint("ScheduleExactAlarm")
     fun activateNotification(notification: NotificationData, context: Context?, alarmManager: AlarmManager) {
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
             Log.d("NotificationSample", "days = ${notification.days}, identifier = ${notification.id}.")

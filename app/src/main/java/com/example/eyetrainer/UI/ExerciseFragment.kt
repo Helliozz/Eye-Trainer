@@ -19,6 +19,7 @@ import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_DATA_SENDING_NO
 import com.example.eyetrainer.Data.Constants.APP_TOAST_BLUETOOTH_NOT_AVAILABLE
 import com.example.eyetrainer.Data.SingleExercise
 import com.example.eyetrainer.R
+import com.example.eyetrainer.Utils.Utils.performTimerEvent
 import com.example.eyetrainer.ViewModel.ExerciseViewModel
 import com.example.eyetrainer.databinding.FragmentExerciseBinding
 
@@ -26,8 +27,9 @@ import com.example.eyetrainer.databinding.FragmentExerciseBinding
 @RequiresApi(Build.VERSION_CODES.S)
 class ExerciseFragment : Fragment() {
     private lateinit var itemFun: (SingleExercise)->Unit
+    private lateinit var createFun: ()->Unit
     private lateinit var binding: FragmentExerciseBinding
-    private val recyclerViewAdapter by lazy { ChoiceRecyclerViewAdapter(itemFun) }
+    private val recyclerViewAdapter by lazy { ChoiceRecyclerViewAdapter(itemFun, createFun) }
     private val exerciseViewModel: ExerciseViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -39,8 +41,11 @@ class ExerciseFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         itemFun = {
-            exerciseViewModel.saveExercise(it)
+            exerciseViewModel.chooseExercise(it)
             requireView().findNavController().navigate(R.id.action_exerciseFragment_to_currentExerciseFragment)
+        }
+        createFun = {
+            requireView().findNavController().navigate(R.id.action_exerciseFragment_to_createExerciseFragment)
         }
 
         binding.reminder.setOnClickListener {
@@ -52,6 +57,13 @@ class ExerciseFragment : Fragment() {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(activity)
             adapter = recyclerViewAdapter
+        }
+
+        exerciseViewModel.exercises.observe(this) {
+            recyclerViewAdapter.differ.submitList(exerciseViewModel.getExercises())
+            performTimerEvent({
+                recyclerViewAdapter.notifyDataSetChanged()
+            }, 50L)
         }
 
         for (permission: String in APP_BLUETOOTH_PERMISSIONS_LIST) {
@@ -95,6 +107,7 @@ class ExerciseFragment : Fragment() {
         if (exerciseViewModel.isBluetoothAvailable() == true) {
             exerciseViewModel.disableSearch()
         }
+        exerciseViewModel.exercises.removeObservers(this)
         super.onDestroy()
     }
 }

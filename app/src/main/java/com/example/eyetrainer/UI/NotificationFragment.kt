@@ -21,6 +21,7 @@ import com.example.eyetrainer.Data.Constants.APP_TOAST_NOTIFICATION_SENDING_NOT_
 import com.example.eyetrainer.Model.NotificationData
 import com.example.eyetrainer.NotificationsApplication
 import com.example.eyetrainer.R
+import com.example.eyetrainer.Utils.Utils.performTimerEvent
 import com.example.eyetrainer.ViewModel.NotificationViewModel
 import com.example.eyetrainer.ViewModel.NotificationViewModelFactory
 import com.example.eyetrainer.databinding.FragmentReminderBinding
@@ -100,16 +101,20 @@ class NotificationFragment : Fragment() {
 
         activateNotification = {
             notificationViewModel.activateNotification(it, context, alarmManager)
+            it.isEnabled = true
+            notificationViewModel.update(it)
         }
 
         deactivateNotification = {
             notificationViewModel.cancelNotification(it, context, alarmManager)
+            it.isEnabled = false
+            notificationViewModel.update(it)
         }
 
         notificationViewModel.notifications.observe(this) { notifications ->
             notifications.let {
                 recyclerViewAdapter.differ.submitList(it)
-                notificationViewModel.performTimerEvent({
+                performTimerEvent({
                     recyclerViewAdapter.notifyDataSetChanged()
                 }, 50L)
             }
