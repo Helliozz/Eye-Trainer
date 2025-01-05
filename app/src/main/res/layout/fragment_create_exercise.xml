@@ -232,8 +232,7 @@
             android:layout_weight="1"
             android:text="Отменить последнее действие"
             android:textSize="11sp"
-            android:textAlignment="center"
-            android:textColor="#000000" />
+            android:textAlignment="center" />
 
         <TextView
             android:id="@+id/arrowText"
@@ -242,8 +241,7 @@
             android:layout_weight="1"
             android:text="Есть ли стрелка у упражнения"
             android:textSize="11sp"
-            android:textAlignment="center"
-            android:textColor="#000000" />
+            android:textAlignment="center" />
 
         <TextView
             android:id="@+id/mirroringText"
@@ -252,8 +250,7 @@
             android:layout_weight="1"
             android:text="Отзеркаливание упражнения"
             android:textSize="11sp"
-            android:textAlignment="center"
-            android:textColor="#000000" />
+            android:textAlignment="center" />
     </LinearLayout>
 
 

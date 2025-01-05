@@ -35,7 +35,7 @@ class NotificationFragment : Fragment() {
     private lateinit var editNotification: (NotificationData) -> Unit
     private lateinit var deleteNotification: (NotificationData) -> Unit
     private lateinit var activateNotification: (NotificationData) -> Unit
-    private lateinit var deactivateNotification: (NotificationData) -> Unit
+    private lateinit var deactivateNotification: (NotificationData, Boolean) -> Unit
     private lateinit var binding: FragmentReminderBinding
 
     private val recyclerViewAdapter by lazy {
@@ -50,7 +50,6 @@ class NotificationFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-
         binding = FragmentReminderBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -105,10 +104,12 @@ class NotificationFragment : Fragment() {
             notificationViewModel.update(it)
         }
 
-        deactivateNotification = {
+        deactivateNotification = { it, silent ->
             notificationViewModel.cancelNotification(it, context, alarmManager)
-            it.isEnabled = false
-            notificationViewModel.update(it)
+            if (!silent) {
+                it.isEnabled = false
+                notificationViewModel.update(it)
+            }
         }
 
         notificationViewModel.notifications.observe(this) { notifications ->

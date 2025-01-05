@@ -20,7 +20,7 @@ class NotificationRecyclerViewAdapter(
     val editNotification: (NotificationData) -> Unit,
     val deleteNotification: (NotificationData) -> Unit,
     val activateNotification: (NotificationData) -> Unit,
-    val deactivateNotification: (NotificationData) -> Unit
+    val deactivateNotification: (NotificationData, Boolean) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private lateinit var binding: ItemRemindActiveBinding
 
@@ -49,7 +49,7 @@ class NotificationRecyclerViewAdapter(
                 date.text = dateString
 
                 delete.setOnClickListener {
-                    recycler.deactivateNotification(item)
+                    recycler.deactivateNotification(item, true)
                     recycler.deleteNotification(item)
                     binding.root.visibility = View.GONE
                     binding.root.isClickable = false
@@ -61,7 +61,7 @@ class NotificationRecyclerViewAdapter(
                     if (checked) {
                         recycler.activateNotification(item)
                     } else {
-                        recycler.deactivateNotification(item)
+                        recycler.deactivateNotification(item, false)
                     }
                 }
 

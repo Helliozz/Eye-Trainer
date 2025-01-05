@@ -24,6 +24,14 @@ object Constants {
     const val APP_EXERCISE_PATTERN_DATA_LENGTH = 32
     const val APP_EXERCISE_DATAPACKAGE_TOTAL_SIZE = (APP_EXERCISE_SECURITY_CODE_LENGTH * 2 + APP_EXERCISE_PATTERN_DATA_LENGTH * 2 + 3)
 
+    const val APP_EXERCISE_GRID_MAX_CELL_COUNT = 8
+    const val APP_EXERCISE_CELL_STATE_ACTIVE = 1
+    const val APP_EXERCISE_CELL_STATE_CHOSEN = 2
+    const val APP_EXERCISE_CELL_STATE_VITAL = 4
+
+    const val APP_PREFERENCES = "APP_EYETRAINER_SPREFERENCES"
+    const val APP_PREFERENCES_SAVED_EXERCISE = "APP_PREFERENCES_SAVED_EXERCISE"
+
     const val APP_KEY_DAY_CHECKSUM = "notification_checksum"
     const val APP_KEY_CHANNEL_ID = "notifications_channel_id_101"
 
@@ -34,7 +42,6 @@ object Constants {
         Manifest.permission.ACCESS_FINE_LOCATION
     )
 
-    val APP_EXERCISE_MAX_CELLS = 8
     val APP_EXERCISES_BASE_LIST = listOf(
         SingleExercise(R.drawable.icon_left_right, "влево-вправо", arrayListOf(Pair(0,0), Pair(0,1), Pair(0,2), Pair(0,3), Pair(0,4), Pair(0,5), Pair(0,6), Pair(0,7), Pair(0,6), Pair(0,5), Pair(0,4), Pair(0,3), Pair(0,2), Pair(0,1))),
         SingleExercise(R.drawable.icon_up_down, "вверх-вниз", arrayListOf(Pair(0,0), Pair(1,0), Pair(2,0), Pair(3,0), Pair(4,0), Pair(5,0), Pair(6,0), Pair(7,0), Pair(6,0), Pair(5,0), Pair(4,0), Pair(3,0), Pair(2,0), Pair(1,0))),
